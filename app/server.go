@@ -37,7 +37,7 @@ func handleConnection(conn net.Conn) {
 		fmt.Println("Error reading connection: ", err.Error())
 		os.Exit(1)
 	}
-	fmt.Println("Message received: ", b)
+	//fmt.Println("Message received: ", b)
 	_, err = conn.Write([]byte("+PONG\r\n"))
 	if err != nil {
 		fmt.Println("Error writing connection: ", err.Error())
