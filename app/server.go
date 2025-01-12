@@ -32,7 +32,7 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 		// This will wait until the connection object gets populated in `acceptConnections` function.
 		// We need a for loop here since we have to keep on listening for the channel contineously to respond to incoming requests.
 		conn := <-connChannel
-		handleConns(conn)
+		go handleConns(conn)
 	}
 
 }
