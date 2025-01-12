@@ -17,7 +17,51 @@ func main() {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
-	handleConnectionsViaMultiThreading(l)
+	defer l.Close()
+	//handleConnectionsViaMultiThreading(l)
+	handleConnectionsViaEventLoop(l)
+}
+
+func handleConnectionsViaEventLoop(listener net.Listener) {
+	// Create a channel to listen for and populate a new request
+	connChannel := make(chan net.Conn)
+	go acceptConnections(listener, connChannel)
+	// The only waiting call here is the call that now waits for connections to be populated
+	for {
+		// Capture the connection object coming from channel here in a variable.
+		// This will wait until the connection object gets populated in `acceptConnections` function.
+		// We need a for loop here since we have to keep on listening for the channel contineously to respond to incoming requests.
+		conn := <-connChannel
+		handleConns(conn)
+	}
+
+}
+
+func handleConns(conn net.Conn) {
+	defer conn.Close()
+	//for {
+	buf := make([]byte, 1024)
+	_, err := conn.Read(buf)
+	if nil != err {
+		fmt.Errorf("Error while reading incoming request %v", err)
+	}
+	conn.Write([]byte("+PONG\r\n"))
+	//}
+}
+
+func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
+	// This blocking behavior is necessary to keep on listening on given port for new connection requests from Clients
+	// How main thread will be unblocked here is by invoking the acceptConnections function as a go subroutine.
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			conn.Close()
+			continue
+		}
+		acceptChan <- conn
+	}
+
 }
 
 func handleConnectionsViaMultiThreading(listener net.Listener) {
@@ -39,6 +83,7 @@ func handleCommand(conn net.Conn) {
 	defer conn.Close()
 	for {
 		// Read data from the connection
+		// DANGER: Blocking call here waiting for a client to request for something on a connection.
 		buf := make([]byte, 1024)
 		im, err := conn.Read(buf)
 		if err != nil {
