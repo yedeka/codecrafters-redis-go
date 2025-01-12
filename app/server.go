@@ -18,6 +18,7 @@ func main() {
 		os.Exit(1)
 	}
 	for {
+		// Accepting connections in an infinite for loop so that we can accept connections from multiple clients.
 		conn, err := l.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection: ", err.Error())
