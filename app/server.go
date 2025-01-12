@@ -17,15 +17,23 @@ func main() {
 			fmt.Println("Failed to bind to port 6379")
 			os.Exit(1)
 		}
-		conn, err := l.Accept()
-		if err != nil {
-			fmt.Println("Error accepting connection: ", err.Error())
-			os.Exit(1)
-		}
-		handleCommand(conn)
+		// We need multithreading here to keep on accepting connection and respond to requests
+		go acceptAndRespond(l)
 	}
-
 }
+
+// acceptAndRespond accepts the new listener for a different client and responds with "PONG".
+func acceptAndRespond(listener net.Listener) {
+	conn, err := listener.Accept()
+	if err != nil {
+		fmt.Println("Error accepting connection: ", err.Error())
+		os.Exit(1)
+	}
+	handleCommand(conn)
+}
+
+// handleCommand accepts a connection and keeps on listening to the connection
+// in an infinite loop to response to multiple reqeusts from same client.
 func handleCommand(conn net.Conn) {
 	for {
 		// Read data from the connection
@@ -42,6 +50,4 @@ func handleCommand(conn net.Conn) {
 			return
 		}
 	}
-
-	defer conn.Close()
 }
