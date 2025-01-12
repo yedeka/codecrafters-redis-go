@@ -39,11 +39,10 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 func handleConns(conn net.Conn) {
 	defer conn.Close()
 	for {
-		fmt.Println("Waiting for next connnection")
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf)
 		if nil != err {
-			fmt.Printf("Error while reading incoming request %v", err)
+			fmt.Printf("Error while reading incoming request %v\n", err)
 		}
 		conn.Write([]byte("+PONG\r\n"))
 	}
