@@ -34,7 +34,7 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 		fmt.Println("Waiting for connections to be populated")
 		conn := <-connChannel
 		fmt.Println("Handling connection")
-		handleConns(conn)
+		go handleConns(conn)
 	}
 
 }
