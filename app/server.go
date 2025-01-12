@@ -24,7 +24,7 @@ func handleConnectionsViaMultiThreading(listener net.Listener) {
 	for {
 		// Accepting connections in an infinite for loop so that we can accept connections from multiple clients.
 		// DANGER - Blocking call here we will block until a new client requests connection.
-		conn, err := l.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection: ", err.Error())
 			conn.Close()
