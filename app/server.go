@@ -32,21 +32,21 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 		// This will wait until the connection object gets populated in `acceptConnections` function.
 		// We need a for loop here since we have to keep on listening for the channel contineously to respond to incoming requests.
 		conn := <-connChannel
-		go handleConns(conn)
+		handleConns(conn)
 	}
 
 }
 
 func handleConns(conn net.Conn) {
 	defer conn.Close()
-	//for {
-	buf := make([]byte, 1024)
-	_, err := conn.Read(buf)
-	if nil != err {
-		fmt.Errorf("Error while reading incoming request %v", err)
+	for {
+		buf := make([]byte, 1024)
+		_, err := conn.Read(buf)
+		if nil != err {
+			fmt.Errorf("Error while reading incoming request %v", err)
+		}
+		conn.Write([]byte("+PONG\r\n"))
 	}
-	conn.Write([]byte("+PONG\r\n"))
-	//}
 }
 
 func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
