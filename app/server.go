@@ -26,5 +26,22 @@ func main() {
 			os.Exit(1)
 		}
 		conn.Write([]byte("+PONG\r\n"))
+		go handleConnection(conn)
 	}
+}
+
+func handleConnection(conn net.Conn) {
+	b := make([]byte, 128)
+	_, err := conn.Read(b)
+	if err != nil {
+		fmt.Println("Error reading connection: ", err.Error())
+		os.Exit(1)
+	}
+	fmt.Println("Message received: ", b)
+	_, err = conn.Write([]byte("+PONG\r\n"))
+	if err != nil {
+		fmt.Println("Error writing connection: ", err.Error())
+		os.Exit(1)
+	}
+	defer conn.Close()
 }
