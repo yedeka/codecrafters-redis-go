@@ -21,7 +21,7 @@ func main() {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 	}
-	handleCommand(conn)
+	go handleCommand(conn)
 }
 func handleCommand(conn net.Conn) {
 	buf := make([]byte, 1024)
