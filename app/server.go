@@ -11,29 +11,23 @@ var _ = net.Listen
 var _ = os.Exit
 
 func main() {
-	for {
-		l, err := net.Listen("tcp", "0.0.0.0:6379")
-		if err != nil {
-			fmt.Println("Failed to bind to port 6379")
-			os.Exit(1)
-		}
-		// We need multithreading here to keep on accepting connection and respond to requests
-		go acceptAndRespond(l)
-	}
-}
 
-// acceptAndRespond accepts the new listener for a different client and responds with "PONG".
-func acceptAndRespond(listener net.Listener) {
-	conn, err := listener.Accept()
+	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
+		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
-	handleCommand(conn)
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			os.Exit(1)
+		}
+		go handleCommand(conn)
+	}
+
 }
 
-// handleCommand accepts a connection and keeps on listening to the connection
-// in an infinite loop to response to multiple reqeusts from same client.
 func handleCommand(conn net.Conn) {
 	for {
 		// Read data from the connection
@@ -50,4 +44,6 @@ func handleCommand(conn net.Conn) {
 			return
 		}
 	}
+
+	defer conn.Close()
 }
