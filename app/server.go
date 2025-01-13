@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -42,12 +42,12 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 func handleConns(conn net.Conn) {
 	defer conn.Close()
 	for {
-		buf := make([]byte, 1024)
-		clientRequest, err := conn.Read(buf)
+		reader := bufio.NewReader(conn)
+		line, err := reader.ReadString('\n')
 		if nil != err {
 			fmt.Printf("Error while reading incoming request %v\n", err)
 		}
-		fmt.Printf("Data received from connection => %s", strconv.Itoa(clientRequest))
+		fmt.Printf("Data read from connection => %s\n", line)
 		conn.Write([]byte("+PONG\r\n"))
 	}
 }
