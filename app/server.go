@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -42,7 +43,7 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 func handleConns(conn net.Conn) {
 	defer conn.Close()
 	//reader := bufio.NewReader(conn)
-	requestBuffer := make([]string, 5)
+	var requestBuffer []string
 	for {
 		requestData := make([]byte, 1024)
 		n, err := conn.Read(requestData)
@@ -53,7 +54,7 @@ func handleConns(conn net.Conn) {
 		fmt.Println("n:", n)
 		data := requestData[:n]
 		fmt.Println("Received:", string(data))
-		requestBuffer = append(requestBuffer, string(data))
+		requestBuffer = strings.Split(string(data), "/r/n")
 		//conn.Write([]byte("+PONG\r\n"))
 		fmt.Printf("%+v", requestBuffer)
 	}
