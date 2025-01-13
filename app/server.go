@@ -43,7 +43,7 @@ func handleConns(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
 	for {
-		line, err := reader.ReadString(' ')
+		line, err := reader.ReadString('\n')
 		if nil != err {
 			fmt.Printf("Error while reading incoming request %v\n", err)
 		}
