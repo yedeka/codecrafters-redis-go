@@ -53,13 +53,13 @@ func handleConns(conn net.Conn) {
 		}
 		fmt.Println("n:", n)
 		data := requestData[:n]
-		fmt.Println("Received:", string(data))
 		requestBuffer = strings.Split(string(data), "\r\n")
 		command := requestBuffer[2]
 		fmt.Printf("Received Command %s\n", command)
+		argumentLength := requestBuffer[3]
 		argument := requestBuffer[4]
 		// Write back to connection
-		_, err = conn.Write([]byte(argument + "\r\n"))
+		_, err = conn.Write([]byte(argumentLength + argument + "\r\n"))
 		if err != nil {
 			fmt.Println("Could not write back to channel")
 			continue
