@@ -57,6 +57,7 @@ func handleConns(conn net.Conn) {
 		requestBuffer = strings.Split(string(data), "/r/n")
 		//conn.Write([]byte("+PONG\r\n"))
 		fmt.Printf("%+v", requestBuffer)
+		fmt.Printf("%d", len(requestBuffer))
 	}
 
 }
