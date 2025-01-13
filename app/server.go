@@ -52,7 +52,7 @@ func readIncomingRequests(reader *bufio.Reader) {
 			fmt.Printf("Error while reading incoming request %v\n", err)
 		}
 		fmt.Printf("Data read from connection => %s\n", line)
-		conn.Write([]byte("+PONG\r\n"))
+		//conn.Write([]byte("+PONG\r\n"))
 	}
 }
 
