@@ -59,7 +59,7 @@ func handleConns(conn net.Conn) {
 		argumentLength := requestBuffer[3]
 		argument := requestBuffer[4]
 		// Write back to connection
-		_, err = conn.Write([]byte(argumentLength + argument + "\r\n"))
+		_, err = conn.Write([]byte(argumentLength + "\r\n" + argument + "\r\n"))
 		if err != nil {
 			fmt.Println("Could not write back to channel")
 			continue
