@@ -41,19 +41,23 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 
 func handleConns(conn net.Conn) {
 	defer conn.Close()
-	reader := bufio.NewReader(conn)
-	readIncomingRequests(reader)
+	//reader := bufio.NewReader(conn)
+	requestBuffer := make([]byte, 1024)
+	for {
+		requestData := make([]byte, 800)
+		n, err := conn.Read(requestData)
+		if err != nil {
+			fmt.Println("Error reading:", err)
+			continue
+		}
+		data := requestBuffer[:n]
+		fmt.Println("Received:", data)
+		//conn.Write([]byte("+PONG\r\n"))
+	}
 }
 
 func readIncomingRequests(reader *bufio.Reader) {
-	for {
-		line, err := reader.ReadString('\n')
-		if nil != err {
-			fmt.Printf("Error while reading incoming request %v\n", err)
-		}
-		fmt.Printf("Data read from connection => %s\n", line)
-		//conn.Write([]byte("+PONG\r\n"))
-	}
+
 }
 
 func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
