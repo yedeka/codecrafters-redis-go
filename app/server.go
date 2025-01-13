@@ -44,12 +44,13 @@ func handleConns(conn net.Conn) {
 	//reader := bufio.NewReader(conn)
 	requestBuffer := make([]byte, 1024)
 	for {
-		requestData := make([]byte, 800)
+		requestData := make([]byte, 1024)
 		n, err := conn.Read(requestData)
 		if err != nil {
 			fmt.Println("Error reading:", err)
 			continue
 		}
+		fmt.Println("n:", n)
 		data := requestBuffer[:n]
 		fmt.Println("Received:", data)
 		//conn.Write([]byte("+PONG\r\n"))
