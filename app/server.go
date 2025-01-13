@@ -41,8 +41,8 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 
 func handleConns(conn net.Conn) {
 	defer conn.Close()
+	reader := bufio.NewReader(conn)
 	for {
-		reader := bufio.NewReader(conn)
 		line, err := reader.ReadString('\n')
 		if nil != err {
 			fmt.Printf("Error while reading incoming request %v\n", err)
