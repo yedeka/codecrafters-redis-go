@@ -51,7 +51,7 @@ func handleConns(conn net.Conn) {
 			continue
 		}
 		fmt.Println("n:", n)
-		data := requestBuffer[:n]
+		data := requestData[:n]
 		fmt.Println("Received:", data)
 		//conn.Write([]byte("+PONG\r\n"))
 	}
