@@ -42,6 +42,10 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 func handleConns(conn net.Conn) {
 	defer conn.Close()
 	reader := bufio.NewReader(conn)
+	readIncomingRequests(reader)
+}
+
+func readIncomingRequests(reader *bufio.Reader) {
 	for {
 		line, err := reader.ReadString('\n')
 		if nil != err {
