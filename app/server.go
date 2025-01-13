@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -22,6 +23,8 @@ func main() {
 	handleConnectionsViaEventLoop(l)
 }
 
+// handleConnectionsViaEventLoop tries to implement an Event Loop like structure to handle the connection requests by trying to keep
+// main execution thread free.
 func handleConnectionsViaEventLoop(listener net.Listener) {
 	// Create a channel to listen for and populate a new request
 	connChannel := make(chan net.Conn)
@@ -40,10 +43,11 @@ func handleConns(conn net.Conn) {
 	defer conn.Close()
 	for {
 		buf := make([]byte, 1024)
-		_, err := conn.Read(buf)
+		clientRequest, err := conn.Read(buf)
 		if nil != err {
 			fmt.Printf("Error while reading incoming request %v\n", err)
 		}
+		fmt.Printf("Data received from connection => %s", strconv.Itoa(clientRequest))
 		conn.Write([]byte("+PONG\r\n"))
 	}
 }
