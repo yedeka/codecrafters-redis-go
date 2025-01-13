@@ -52,7 +52,7 @@ func handleConns(conn net.Conn) {
 		}
 		fmt.Println("n:", n)
 		data := requestData[:n]
-		fmt.Println("Received:", data)
+		fmt.Println("Received:", string(data))
 		//conn.Write([]byte("+PONG\r\n"))
 	}
 }
