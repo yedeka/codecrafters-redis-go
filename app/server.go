@@ -55,8 +55,9 @@ func handleConns(conn net.Conn) {
 		fmt.Println("Received:", string(data))
 		requestBuffer = append(requestBuffer, string(data))
 		//conn.Write([]byte("+PONG\r\n"))
+		fmt.Printf("%+v", requestBuffer)
 	}
-	fmt.Printf("%+v", requestBuffer)
+
 }
 
 func readIncomingRequests(reader *bufio.Reader) {
