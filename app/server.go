@@ -4,91 +4,14 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"strings"
+
+	"github.com/codecrafters-io/redis-starter-go/app/command"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
 var _ = net.Listen
 var _ = os.Exit
-
-const terminationSequence = "\r\n"
-const lengthPrefix = "$"
-
-type ParsedResponse struct {
-	Responsetype string
-	ResponseData string
-}
-
-type Command interface {
-	Execute() string
-	FormatOutput([]ParsedResponse) string
-}
-
-type EchoCommand struct {
-	input string
-}
-
-func (echo EchoCommand) Execute() string {
-	inputLength := len(echo.input)
-	rawResponseList := make([]ParsedResponse, 2)
-	rawResponseList[0] = ParsedResponse{
-		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(inputLength),
-	}
-	rawResponseList[1] = ParsedResponse{
-		Responsetype: "DATA",
-		ResponseData: echo.input,
-	}
-	return echo.FormatOutput(rawResponseList)
-}
-
-func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
-	var commandResponse strings.Builder
-	for _, rawResponse := range rawResponseList {
-		if rawResponse.Responsetype == "LENGTH" {
-			writeResponse(lengthPrefix,
-				rawResponse.ResponseData,
-				terminationSequence,
-				&commandResponse)
-		} else if rawResponse.Responsetype == "DATA" {
-			writeResponse("",
-				rawResponse.ResponseData,
-				terminationSequence,
-				&commandResponse)
-		}
-	}
-
-	return commandResponse.String()
-}
-
-func writeResponse(prefix string,
-	responseData string,
-	responseDelimiter string,
-	responseBuffer *strings.Builder) {
-	if prefix != "" {
-		responseBuffer.WriteString(prefix)
-	}
-	responseBuffer.WriteString(responseData)
-	responseBuffer.WriteString(responseDelimiter)
-}
-
-type PingCommand struct {
-	ResponsePrompt string
-}
-
-func (ping PingCommand) Execute() string {
-	var pingResponse strings.Builder
-	lengthString := strconv.Itoa(len(ping.ResponsePrompt))
-	// Writing Ping response here without a formatter since it is a simple static response
-	pingResponse.WriteString(lengthPrefix)
-	pingResponse.WriteString(lengthString)
-	pingResponse.WriteString(terminationSequence)
-	pingResponse.WriteString(ping.ResponsePrompt)
-	pingResponse.WriteString(terminationSequence)
-
-	return pingResponse.String()
-}
 
 func main() {
 
@@ -118,21 +41,6 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 	}
 }
 
-func handleRequest(inputRequest []string) string {
-	switch command := strings.ToUpper(inputRequest[2]); command {
-	case "ECHO":
-		return EchoCommand{
-			input: inputRequest[4],
-		}.Execute()
-	case "PING":
-		return PingCommand{
-			ResponsePrompt: "PONG",
-		}.Execute()
-	default:
-		return "Non Standard Command"
-	}
-}
-
 func handleConns(conn net.Conn) {
 	defer conn.Close()
 	//reader := bufio.NewReader(conn)
@@ -146,8 +54,9 @@ func handleConns(conn net.Conn) {
 		}
 		data := requestData[:n]
 		requestBuffer = strings.Split(string(data), "\r\n")
+		requestedCommand := command.CommandFactory(requestBuffer)
 		// Write back to connection
-		_, err = conn.Write([]byte(handleRequest(requestBuffer)))
+		_, err = conn.Write([]byte(requestedCommand.Execute()))
 		if err != nil {
 			fmt.Println("Could not write back to channel")
 			continue
