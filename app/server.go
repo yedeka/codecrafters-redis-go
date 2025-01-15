@@ -51,13 +51,11 @@ func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 				rawResponse.ResponseData,
 				terminationSequence,
 				&commandResponse)
-			fmt.Printf("LENGTH Response => %v", commandResponse.String())
 		} else if rawResponse.Responsetype == "DATA" {
 			writeResponse("",
 				rawResponse.ResponseData,
 				terminationSequence,
 				&commandResponse)
-			fmt.Printf("Data Response => %v", commandResponse.String())
 		}
 	}
 
