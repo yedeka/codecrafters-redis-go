@@ -59,6 +59,7 @@ func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 				commandResponse)
 		}
 	}
+	fmt.Print(commandResponse.String())
 	return commandResponse.String()
 }
 
@@ -71,7 +72,6 @@ func writeResponse(prefix string,
 	}
 	responseBuffer.WriteString(responseData)
 	responseBuffer.WriteString(responseDelimiter)
-	fmt.Println(responseBuffer.String() + "\n")
 }
 
 type PingCommand struct {
