@@ -146,7 +146,7 @@ func handleConns(conn net.Conn) {
 		}
 		data := requestData[:n]
 		requestBuffer = strings.Split(string(data), "\r\n")
-
+		fmt.Printf("Got request => %v", requestBuffer)
 		// Write back to connection
 		_, err = conn.Write([]byte(handleRequest(requestBuffer)))
 		if err != nil {
