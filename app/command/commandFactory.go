@@ -20,6 +20,14 @@ func CommandFactory(inputRequest []string) Command {
 				successfulResponse: "+OK",
 			}
 		}
+	case "GET":
+		{
+			return GetCommand{
+				key:      inputRequest[4],
+				erroCode: "-1",
+			}
+		}
+
 	default:
 		return nil
 	}
