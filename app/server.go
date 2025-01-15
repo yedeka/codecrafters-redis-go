@@ -41,7 +41,6 @@ func (echo EchoCommand) Execute() string {
 		Responsetype: "DATA",
 		ResponseData: echo.input,
 	}
-	fmt.Printf("rawResponse => %v\n", rawResponseList)
 	return echo.FormatOutput(rawResponseList)
 }
 
@@ -72,6 +71,7 @@ func writeResponse(prefix string,
 	}
 	responseBuffer.WriteString(responseData)
 	responseBuffer.WriteString(responseDelimiter)
+	fmt.Println(responseBuffer.String() + "\n")
 }
 
 type PingCommand struct {
