@@ -31,6 +31,7 @@ type EchoCommand struct {
 
 func (echo EchoCommand) Execute() string {
 	inputLength := len(echo.input)
+	fmt.Println("inputLength ", inputLength)
 	rawResponseList := make([]ParsedResponse, 0, 2)
 	rawResponseList[0] = ParsedResponse{
 		Responsetype: "LENGTH",
