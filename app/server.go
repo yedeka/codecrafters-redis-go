@@ -31,8 +31,8 @@ type EchoCommand struct {
 
 func (echo EchoCommand) Execute() string {
 	inputLength := len(echo.input)
-	fmt.Println("inputLength ", inputLength)
-	rawResponseList := make([]ParsedResponse, 0, 2)
+	fmt.Println("input ", echo.input)
+	rawResponseList := make([]ParsedResponse, 2)
 	rawResponseList[0] = ParsedResponse{
 		Responsetype: "LENGTH",
 		ResponseData: strconv.Itoa(inputLength),
@@ -41,6 +41,7 @@ func (echo EchoCommand) Execute() string {
 		Responsetype: "DATA",
 		ResponseData: echo.input,
 	}
+	fmt.Printf("rawResponse => %v\n", rawResponseList)
 	return echo.FormatOutput(rawResponseList)
 }
 
@@ -146,7 +147,6 @@ func handleConns(conn net.Conn) {
 		}
 		data := requestData[:n]
 		requestBuffer = strings.Split(string(data), "\r\n")
-		fmt.Printf("Got request => %v", requestBuffer)
 		// Write back to connection
 		_, err = conn.Write([]byte(handleRequest(requestBuffer)))
 		if err != nil {
