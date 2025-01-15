@@ -50,13 +50,13 @@ func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 			writeResponse(lengthPrefix,
 				rawResponse.ResponseData,
 				terminationSequence,
-				commandResponse)
+				&commandResponse)
 			fmt.Printf("LENGTH Response => %v", commandResponse.String())
 		} else if rawResponse.Responsetype == "DATA" {
 			writeResponse("",
 				rawResponse.ResponseData,
 				terminationSequence,
-				commandResponse)
+				&commandResponse)
 			fmt.Printf("Data Response => %v", commandResponse.String())
 		}
 	}
@@ -67,7 +67,7 @@ func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 func writeResponse(prefix string,
 	responseData string,
 	responseDelimiter string,
-	responseBuffer strings.Builder) {
+	responseBuffer *strings.Builder) {
 	if prefix != "" {
 		responseBuffer.WriteString(prefix)
 	}
