@@ -12,6 +12,13 @@ func CommandFactory(inputRequest []string) Command {
 		return PingCommand{
 			ResponsePrompt: "PONG",
 		}
+	case "SET":
+		{
+			return SetCommand{
+				key:   inputRequest[4],
+				value: inputRequest[6],
+			}
+		}
 	default:
 		return nil
 	}
