@@ -2,7 +2,7 @@ package command
 
 import "strings"
 
-var keyMap map[string]string
+var keyMap map[string]string = make(map[string]string)
 
 type SetCommand struct {
 	key                string
