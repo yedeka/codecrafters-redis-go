@@ -55,6 +55,10 @@ func handleConns(conn net.Conn) {
 		data := requestData[:n]
 		requestBuffer = strings.Split(string(data), "\r\n")
 		requestedCommand := command.CommandFactory(requestBuffer)
+		if nil == requestedCommand {
+			fmt.Errorf("Unsupported command passed")
+			os.Exit(1)
+		}
 		// Write back to connection
 		_, err = conn.Write([]byte(requestedCommand.Execute()))
 		if err != nil {
