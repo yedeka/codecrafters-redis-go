@@ -29,7 +29,7 @@ type EchoCommand struct {
 	input string
 }
 
-func (echo *EchoCommand) execute() string {
+func (echo EchoCommand) Execute() string {
 	inputLength := len(echo.input)
 	rawResponseList := make([]ParsedResponse, 0, 2)
 	rawResponseList[0] = ParsedResponse{
@@ -43,7 +43,7 @@ func (echo *EchoCommand) execute() string {
 	return echo.FormatOutput(rawResponseList)
 }
 
-func (echo *EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
+func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 	var commandResponse strings.Builder
 	for _, rawResponse := range rawResponseList {
 		if rawResponse.Responsetype == "LENGTH" {
@@ -73,17 +73,17 @@ func writeResponse(prefix string,
 }
 
 type PingCommand struct {
-	responsePrompt string
+	ResponsePrompt string
 }
 
-func (ping *PingCommand) execute() string {
+func (ping PingCommand) Execute() string {
 	var pingResponse strings.Builder
-	lengthString := strconv.Itoa(len(ping.responsePrompt))
+	lengthString := strconv.Itoa(len(ping.ResponsePrompt))
 	// Writing Ping response here without a formatter since it is a simple static response
 	pingResponse.WriteString(lengthPrefix)
 	pingResponse.WriteString(lengthString)
 	pingResponse.WriteString(terminationSequence)
-	pingResponse.WriteString(ping.responsePrompt)
+	pingResponse.WriteString(ping.ResponsePrompt)
 	pingResponse.WriteString(terminationSequence)
 
 	return pingResponse.String()
@@ -117,6 +117,21 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 	}
 }
 
+func handleRequest(inputRequest []string) string {
+	switch command := strings.ToUpper(inputRequest[2]); command {
+	case "ECHO":
+		return EchoCommand{
+			input: inputRequest[4],
+		}.Execute()
+	case "PING":
+		return PingCommand{
+			ResponsePrompt: "PONG",
+		}.Execute()
+	default:
+		return "Non Standard Command"
+	}
+}
+
 func handleConns(conn net.Conn) {
 	defer conn.Close()
 	//reader := bufio.NewReader(conn)
@@ -128,15 +143,11 @@ func handleConns(conn net.Conn) {
 			fmt.Println("Error reading:", err)
 			continue
 		}
-		fmt.Println("n:", n)
 		data := requestData[:n]
 		requestBuffer = strings.Split(string(data), "\r\n")
-		command := requestBuffer[2]
-		fmt.Printf("Received Command %s\n", command)
-		argumentLength := requestBuffer[3]
-		argument := requestBuffer[4]
+
 		// Write back to connection
-		_, err = conn.Write([]byte(argumentLength + "\r\n" + argument + "\r\n"))
+		_, err = conn.Write([]byte(handleRequest(requestBuffer)))
 		if err != nil {
 			fmt.Println("Could not write back to channel")
 			continue
