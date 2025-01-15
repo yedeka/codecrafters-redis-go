@@ -15,8 +15,9 @@ func CommandFactory(inputRequest []string) Command {
 	case "SET":
 		{
 			return SetCommand{
-				key:   inputRequest[4],
-				value: inputRequest[6],
+				key:                inputRequest[4],
+				value:              inputRequest[6],
+				successfulResponse: "+OK",
 			}
 		}
 	default:
