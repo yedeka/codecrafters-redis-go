@@ -1,6 +1,7 @@
 package command
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -21,7 +22,7 @@ func (get GetCommand) Execute() string {
 	} else {
 		rawResponseList = append(rawResponseList, ParsedResponse{
 			Responsetype: "LENGTH",
-			ResponseData: value,
+			ResponseData: strconv.Itoa(len(value)),
 		})
 		rawResponseList = append(rawResponseList, ParsedResponse{
 			Responsetype: "DATA",
