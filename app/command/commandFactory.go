@@ -3,7 +3,7 @@ package command
 import "strings"
 
 func CommandFactory(inputRequest []string) Command {
-	var argsMap map[string]string
+	argsMap := make(map[string]string)
 	if len(inputRequest) > 7 {
 		for i := 8; i < len(inputRequest); i += 4 {
 			argsMap[inputRequest[i]] = inputRequest[i+2]
