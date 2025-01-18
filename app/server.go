@@ -109,7 +109,7 @@ func handleCommand(conn net.Conn) {
 			fmt.Println("Error reading:", err)
 			return
 		}
-		fmt.Printf("Incoming message %d\n", im)
+		fmt.Printf("Incoming message sample %d\n", im)
 		// Write back to connection
 		_, err = conn.Write([]byte("+PONG\r\n"))
 		if err != nil {
