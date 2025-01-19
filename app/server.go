@@ -18,10 +18,10 @@ var defaultAddress = "0.0.0.0:"
 func main() {
 	var portFlag string
 	flag.StringVar(&portFlag, "port", "6379", "Port for Redis server to accept client connections")
+	flag.Parse()
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(portFlag)
-	fmt.Printf("Flag value %v\n", flag.CommandLine.Arg(0))
 	fmt.Printf("Listening address %v\n", listeningAddress.String())
 	l, err := net.Listen("tcp", listeningAddress.String())
 
