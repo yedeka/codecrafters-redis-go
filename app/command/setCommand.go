@@ -26,16 +26,15 @@ type SetCommand struct {
 func (set SetCommand) prepareSetValue() error {
 	intDuration, err := strconv.Atoi(set.args["px"])
 	if nil != err {
+		keyMap[set.key] = set.value
 		return errors.New("invalid expiry time specified")
 	} else {
 		set.value.timer = time.NewTimer(time.Duration(intDuration) * time.Millisecond)
-		keyMap[set.key] = set.value
 		go func() {
 			<-set.value.timer.C
 			delete(keyMap, set.key)
 		}()
 		return nil
-
 	}
 }
 
