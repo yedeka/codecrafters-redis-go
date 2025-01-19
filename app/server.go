@@ -1,9 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/codecrafters-io/redis-starter-go/app/command"
@@ -12,10 +14,16 @@ import (
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
 var _ = net.Listen
 var _ = os.Exit
+var defaultAddress = "0.0.0.0"
 
 func main() {
+	var portFlag int
+	flag.IntVar(&portFlag, "port", 6380, "Port for Redis server to accept client connections")
+	var listeningAddress strings.Builder
+	listeningAddress.WriteString(defaultAddress)
+	listeningAddress.WriteString(strconv.Itoa(portFlag))
+	l, err := net.Listen("tcp", listeningAddress.String())
 
-	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
@@ -41,9 +49,22 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 	}
 }
 
+func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
+	// This blocking behavior is necessary to keep on listening on given port for new connection requests from Clients
+	// How main thread will be unblocked here is by invoking the acceptConnections function as a go subroutine.
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			conn.Close()
+			continue
+		}
+		acceptChan <- conn
+	}
+}
+
 func handleConns(conn net.Conn) {
 	defer conn.Close()
-	//reader := bufio.NewReader(conn)
 	var requestBuffer []string
 	for {
 		requestData := make([]byte, 1024)
@@ -65,21 +86,6 @@ func handleConns(conn net.Conn) {
 			continue
 		}
 	}
-}
-
-func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
-	// This blocking behavior is necessary to keep on listening on given port for new connection requests from Clients
-	// How main thread will be unblocked here is by invoking the acceptConnections function as a go subroutine.
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Println("Error accepting connection: ", err.Error())
-			conn.Close()
-			continue
-		}
-		acceptChan <- conn
-	}
-
 }
 
 func handleConnectionsViaMultiThreading(listener net.Listener) {
