@@ -32,7 +32,6 @@ func (set SetCommand) prepareSetValue() error {
 		keyMap[set.key] = set.value
 		go func() {
 			<-set.value.timer.C
-			fmt.Println("Expiring timer")
 			delete(keyMap, set.key)
 		}()
 		return nil
