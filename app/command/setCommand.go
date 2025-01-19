@@ -43,6 +43,7 @@ func (set SetCommand) Execute() string {
 	if nil != err {
 		fmt.Println(err.Error())
 	}
+	fmt.Printf("%+v\n", keyMap)
 	var successfulResponse strings.Builder
 	successfulResponse.WriteString(set.successfulResponse)
 	successfulResponse.WriteString(terminationSequence)
