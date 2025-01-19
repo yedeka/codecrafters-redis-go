@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/codecrafters-io/redis-starter-go/app/command"
@@ -17,11 +16,11 @@ var _ = os.Exit
 var defaultAddress = "0.0.0.0:"
 
 func main() {
-	var portFlag int
-	flag.IntVar(&portFlag, "port", 6379, "Port for Redis server to accept client connections")
+	var portFlag string
+	flag.StringVar(&portFlag, "port", "6379", "Port for Redis server to accept client connections")
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(defaultAddress)
-	listeningAddress.WriteString(strconv.Itoa(portFlag))
+	listeningAddress.WriteString(portFlag)
 	fmt.Printf("Flag value %v\n", flag.CommandLine.Arg(0))
 	fmt.Printf("Listening address %v\n", listeningAddress.String())
 	l, err := net.Listen("tcp", listeningAddress.String())
