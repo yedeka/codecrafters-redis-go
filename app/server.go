@@ -18,7 +18,7 @@ var defaultAddress = "0.0.0.0"
 
 func main() {
 	var portFlag int
-	flag.IntVar(&portFlag, "port", 6380, "Port for Redis server to accept client connections")
+	flag.IntVar(&portFlag, "port", 6379, "Port for Redis server to accept client connections")
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(strconv.Itoa(portFlag))
