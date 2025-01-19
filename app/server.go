@@ -22,6 +22,7 @@ func main() {
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(strconv.Itoa(portFlag))
+	fmt.Printf("Flag value %v\n", flag.CommandLine.Arg(0))
 	fmt.Printf("Listening address %v\n", listeningAddress.String())
 	l, err := net.Listen("tcp", listeningAddress.String())
 
