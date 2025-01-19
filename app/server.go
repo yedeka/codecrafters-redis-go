@@ -104,12 +104,10 @@ func handleCommand(conn net.Conn) {
 		// Read data from the connection
 		// DANGER: Blocking call here waiting for a client to request for something on a connection.
 		buf := make([]byte, 1024)
-		im, err := conn.Read(buf)
+		_, err := conn.Read(buf)
 		if err != nil {
-			fmt.Println("Error reading:", err)
 			return
 		}
-		fmt.Printf("Incoming message sample %d\n", im)
 		// Write back to connection
 		_, err = conn.Write([]byte("+PONG\r\n"))
 		if err != nil {

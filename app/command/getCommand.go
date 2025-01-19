@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -14,7 +13,6 @@ type GetCommand struct {
 func (get GetCommand) Execute() string {
 	var rawResponseList []ParsedResponse
 	value, ok := keyMap[get.key]
-	fmt.Printf("map at get %+v\n", keyMap)
 	if !ok {
 		rawResponseList := append(rawResponseList, ParsedResponse{
 			Responsetype: "FAILURE",
