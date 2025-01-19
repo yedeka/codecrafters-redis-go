@@ -19,15 +19,16 @@ func CommandFactory(inputRequest []string) Command {
 			ResponsePrompt: "PONG",
 		}
 	case "SET":
+		keyValue := inputRequest[4]
 		return SetCommand{
-			key: SetKey{
-				key: inputRequest[4],
+			key: keyValue,
+			value: SetValue{
+				key:   keyValue,
+				value: inputRequest[6],
 			},
-			value:              inputRequest[6],
 			successfulResponse: "+OK",
 			args:               argsMap,
 		}
-
 	case "GET":
 		{
 			return GetCommand{

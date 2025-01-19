@@ -2,41 +2,46 @@ package command
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var keyMap map[SetKey]string = make(map[SetKey]string)
+var keyMap map[string]SetValue = make(map[string]SetValue)
 
-type SetKey struct {
+type SetValue struct {
+	value string
 	key   string
 	timer *time.Timer
 }
 
 type SetCommand struct {
-	key                SetKey
-	value              string
+	key                string
+	value              SetValue
 	successfulResponse string
 	args               map[string]string
 }
 
-func (set SetCommand) prepareSetKey() error {
+func (set SetCommand) prepareSetValue() error {
 	intDuration, err := strconv.Atoi(set.args["px"])
 	if nil != err {
-		errors.New("Invalid expiry time specified")
+		return errors.New("invalid expiry time specified")
 	}
-	set.key.timer = time.NewTimer(time.Duration(intDuration) * time.Millisecond)
+	set.value.timer = time.NewTimer(time.Duration(intDuration) * time.Millisecond)
+	keyMap[set.key] = set.value
 	go func() {
-		<-set.key.timer.C
+		<-set.value.timer.C
 		delete(keyMap, set.key)
 	}()
 	return nil
 }
 
 func (set SetCommand) Execute() string {
-
-	keyMap[set.key] = set.value
+	err := set.prepareSetValue()
+	if nil != err {
+		fmt.Println(err.Error())
+	}
 	var successfulResponse strings.Builder
 	successfulResponse.WriteString(set.successfulResponse)
 	successfulResponse.WriteString(terminationSequence)

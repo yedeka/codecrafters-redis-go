@@ -22,11 +22,11 @@ func (get GetCommand) Execute() string {
 	} else {
 		rawResponseList = append(rawResponseList, ParsedResponse{
 			Responsetype: "LENGTH",
-			ResponseData: strconv.Itoa(len(value)),
+			ResponseData: strconv.Itoa(len(value.value)),
 		})
 		rawResponseList = append(rawResponseList, ParsedResponse{
 			Responsetype: "DATA",
-			ResponseData: value,
+			ResponseData: value.value,
 		})
 		return get.FormatOutput(rawResponseList)
 	}
