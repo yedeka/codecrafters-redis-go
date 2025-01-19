@@ -27,6 +27,7 @@ func (set SetCommand) prepareSetValue() error {
 	intDuration, err := strconv.Atoi(set.args["px"])
 	if nil != err {
 		keyMap[set.key] = set.value
+		fmt.Printf("Setting map without expiry follows => %v\n", keyMap)
 		return errors.New("invalid expiry time specified")
 	} else {
 		set.value.timer = time.NewTimer(time.Duration(intDuration) * time.Millisecond)
@@ -34,6 +35,7 @@ func (set SetCommand) prepareSetValue() error {
 			<-set.value.timer.C
 			delete(keyMap, set.key)
 		}()
+		fmt.Printf("Setting map with expiry %d follows => %v\n", intDuration, keyMap)
 		return nil
 	}
 }
