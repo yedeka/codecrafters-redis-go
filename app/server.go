@@ -22,7 +22,6 @@ func main() {
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(portFlag)
-	fmt.Printf("Listening address %v\n", listeningAddress.String())
 	l, err := net.Listen("tcp", listeningAddress.String())
 
 	if err != nil {
