@@ -49,7 +49,6 @@ func handleConns(conn net.Conn) {
 		requestData := make([]byte, 1024)
 		n, err := conn.Read(requestData)
 		if err != nil {
-			fmt.Println("Error reading:", err)
 			continue
 		}
 		data := requestData[:n]
