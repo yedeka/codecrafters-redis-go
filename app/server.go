@@ -16,10 +16,13 @@ var _ = os.Exit
 var defaultAddress = "0.0.0.0:"
 
 func main() {
-	var portFlag string
+	var portFlag, replicaFlag string
 	flag.StringVar(&portFlag, "port", "6379", "Port for Redis server to accept client connections")
+	flag.StringVar(&replicaFlag, "replicaof", "localhost 6380", "Replica specification for slave")
 	flag.Parse()
 	var listeningAddress strings.Builder
+	var replicaList = strings.Split(replicaFlag, " ")
+	fmt.Printf("%+v\n", replicaList)
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(portFlag)
 	l, err := net.Listen("tcp", listeningAddress.String())
