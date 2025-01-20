@@ -37,7 +37,7 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 }
 
 func (info InfoCommand) Execute() string {
-	return info.FormatOutput(handleArgs(info.arguments))
+	return info.FormatOutput(handleArgs(info))
 }
 
 func (info InfoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
