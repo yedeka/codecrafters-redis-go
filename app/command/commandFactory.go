@@ -45,7 +45,8 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 	case "INFO":
 		{
 			return InfoCommand{
-				arguments: []string{inputRequest[4]},
+				arguments:  []string{inputRequest[4]},
+				hostConfig: hostConfig,
 			}
 		}
 
