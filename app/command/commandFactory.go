@@ -1,9 +1,13 @@
 package command
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func CommandFactory(inputRequest []string) Command {
 	argsMap := make(map[string]string)
+	fmt.Printf("%+v\n", inputRequest)
 	if len(inputRequest) > 7 {
 		for i := 8; i < len(inputRequest); i += 4 {
 			argsMap[strings.ToLower(inputRequest[i])] = inputRequest[i+2]
