@@ -22,6 +22,7 @@ func main() {
 	flag.Parse()
 	var listeningAddress strings.Builder
 	var replicaList = strings.Split(replicaFlag, " ")
+	fmt.Printf("%d\n", len(replicaList))
 	fmt.Printf("%+v\n", replicaList)
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(portFlag)
