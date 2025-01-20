@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -28,6 +29,7 @@ func handleArgs(args []string) []ParsedResponse {
 }
 
 func (info InfoCommand) Execute() string {
+	fmt.Printf("%+v\n", info)
 	return info.FormatOutput(handleArgs(info.arguments))
 }
 
