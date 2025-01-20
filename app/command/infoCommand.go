@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -13,7 +12,7 @@ type InfoCommand struct {
 func handleArgs(args []string) []ParsedResponse {
 	responseList := []ParsedResponse{}
 	for _, arg := range args {
-		if strings.ToLower(arg) == "info" {
+		if strings.ToLower(arg) == "replication" {
 			responseString := "role:master"
 			responseList = append(responseList, ParsedResponse{
 				Responsetype: "LENGTH",
@@ -29,7 +28,6 @@ func handleArgs(args []string) []ParsedResponse {
 }
 
 func (info InfoCommand) Execute() string {
-	fmt.Printf("%+v\n", info)
 	return info.FormatOutput(handleArgs(info.arguments))
 }
 
