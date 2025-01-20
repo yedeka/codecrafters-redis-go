@@ -40,6 +40,12 @@ func CommandFactory(inputRequest []string) Command {
 				erroCode: "-1",
 			}
 		}
+	case "INFO":
+		{
+			return InfoCommand{
+				arguments: []string{inputRequest[4]},
+			}
+		}
 
 	default:
 		return nil
