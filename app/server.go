@@ -1,13 +1,16 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/codecrafters-io/redis-starter-go/app/command"
+	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
 
 // Ensures gofmt doesn't remove the "net" and "os" imports in stage 1 (feel free to remove this!)
@@ -18,28 +21,49 @@ var defaultAddress = "0.0.0.0:"
 func main() {
 	var portFlag, replicaFlag string
 	flag.StringVar(&portFlag, "port", "6379", "Port for Redis server to accept client connections")
-	flag.StringVar(&replicaFlag, "replicaof", "localhost 6380", "Replica specification for slave")
+	flag.StringVar(&replicaFlag, "replicaof", "leader", "Replica specification for slave")
 	flag.Parse()
 	var listeningAddress strings.Builder
 	var replicaList = strings.Split(replicaFlag, " ")
-	fmt.Printf("%d\n", len(replicaList))
-	fmt.Printf("%+v\n", replicaList)
 	listeningAddress.WriteString(defaultAddress)
 	listeningAddress.WriteString(portFlag)
-	l, err := net.Listen("tcp", listeningAddress.String())
-
+	hostConfig, err := parseHostConfig(replicaList)
 	if err != nil {
-		fmt.Println("Failed to bind to port 6379")
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	l, err := net.Listen("tcp", listeningAddress.String())
+	if err != nil {
+		fmt.Printf("Failed to bind to port %s\n", portFlag)
 		os.Exit(1)
 	}
 	defer l.Close()
 	//handleConnectionsViaMultiThreading(l)
-	handleConnectionsViaEventLoop(l)
+	handleConnectionsViaEventLoop(l, hostConfig)
+}
+
+func parseHostConfig(config []string) (*model.HostConfig, error) {
+	if config[0] == "leader" {
+		return &model.HostConfig{
+			IsMaster: true,
+		}, nil
+	}
+	masterPort, err := strconv.Atoi(config[1])
+	if nil != err {
+		return nil, errors.New("non numeric port configuration passed for server")
+	}
+	return &model.HostConfig{
+		IsMaster: false,
+		MasterProps: model.MasterConfig{
+			Host: config[0],
+			Port: masterPort,
+		},
+	}, nil
 }
 
 // handleConnectionsViaEventLoop tries to implement an Event Loop like structure to handle the connection requests by trying to keep
 // main execution thread free.
-func handleConnectionsViaEventLoop(listener net.Listener) {
+func handleConnectionsViaEventLoop(listener net.Listener, hostProps *model.HostConfig) {
 	// Create a channel to listen for and populate a new request
 	connChannel := make(chan net.Conn)
 	go acceptConnections(listener, connChannel)
@@ -49,7 +73,7 @@ func handleConnectionsViaEventLoop(listener net.Listener) {
 		// This will wait until the connection object gets populated in `acceptConnections` function.
 		// We need a for loop here since we have to keep on listening for the channel contineously to respond to incoming requests.
 		conn := <-connChannel
-		go handleConns(conn)
+		go handleConns(conn, hostProps)
 	}
 }
 
@@ -67,7 +91,7 @@ func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
 	}
 }
 
-func handleConns(conn net.Conn) {
+func handleConns(conn net.Conn, hostProps *model.HostConfig) {
 	defer conn.Close()
 	var requestBuffer []string
 	for {
@@ -78,7 +102,7 @@ func handleConns(conn net.Conn) {
 		}
 		data := requestData[:n]
 		requestBuffer = strings.Split(string(data), "\r\n")
-		requestedCommand := command.CommandFactory(requestBuffer)
+		requestedCommand := command.CommandFactory(requestBuffer, hostProps)
 		if nil == requestedCommand {
 			fmt.Println("Unsupported command passed")
 			os.Exit(1)

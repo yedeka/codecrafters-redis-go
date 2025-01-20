@@ -3,17 +3,26 @@ package command
 import (
 	"strconv"
 	"strings"
+
+	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
 
 type InfoCommand struct {
-	arguments []string
+	hostConfig *model.HostConfig
+	arguments  []string
 }
 
-func handleArgs(args []string) []ParsedResponse {
+func handleArgs(info InfoCommand) []ParsedResponse {
 	responseList := []ParsedResponse{}
-	for _, arg := range args {
+	for _, arg := range info.arguments {
 		if strings.ToLower(arg) == "replication" {
-			responseString := "role:master"
+			var responseString string = ""
+			if info.hostConfig.IsMaster {
+				responseString = "role:master"
+			} else {
+				responseString = "role:slave"
+			}
+
 			responseList = append(responseList, ParsedResponse{
 				Responsetype: "LENGTH",
 				ResponseData: strconv.Itoa(len(responseString)),
