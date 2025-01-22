@@ -20,7 +20,7 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 			if info.hostConfig.IsMaster {
 				return handleMaster(defaultReplId, defaultOffset)
 			} else {
-				responseString = "role:slave"
+				responseString = rolePrefix + slaveRole
 			}
 			responseList = append(responseList, ParsedResponse{
 				Responsetype: "LENGTH",
