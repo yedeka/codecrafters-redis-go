@@ -44,7 +44,7 @@ func handleMaster(replicationId string, offset int) []ParsedResponse {
 
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(hostRoleEntry + replicationIdEntry + replicationOffset)),
+		ResponseData: strconv.Itoa(len(hostRoleEntry+replicationIdEntry+replicationOffset) + 2),
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "HOST_ROLE",
