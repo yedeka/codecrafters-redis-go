@@ -22,7 +22,6 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 			} else {
 				responseString = "role:slave"
 			}
-
 			responseList = append(responseList, ParsedResponse{
 				Responsetype: "LENGTH",
 				ResponseData: strconv.Itoa(len(responseString)),
@@ -39,21 +38,25 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 func handleMaster(replicationId string, offset int) []ParsedResponse {
 	//8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb
 	masterInfoResponse := []ParsedResponse{}
+	hostRoleEntry := rolePrefix + masterRole
+	replicationIdEntry := replictionIdPrefix + replicationId
+	replicationOffset := replicationOffset + strconv.Itoa(offset)
+
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(replictionIdPrefix + replicationId)),
+		ResponseData: strconv.Itoa(len(hostRoleEntry + replicationIdEntry + replicationOffset)),
+	})
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "HOST_ROLE",
+		ResponseData: hostRoleEntry,
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_ID",
-		ResponseData: replicationId,
-	})
-	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
-		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(replicationOffset + strconv.Itoa(offset))),
+		ResponseData: replicationIdEntry,
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_OFFSET",
-		ResponseData: strconv.Itoa(offset),
+		ResponseData: replicationOffset,
 	})
 	return masterInfoResponse
 }
@@ -70,17 +73,7 @@ func (info InfoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 				rawResponse.ResponseData,
 				terminationSequence,
 				&commandResponse)
-		} else if rawResponse.Responsetype == "REPL_ID" {
-			writeResponse(replictionIdPrefix,
-				rawResponse.ResponseData,
-				terminationSequence,
-				&commandResponse)
-		} else if rawResponse.Responsetype == "REPL_OFFSET" {
-			writeResponse(replicationOffset,
-				rawResponse.ResponseData,
-				terminationSequence,
-				&commandResponse)
-		} else if rawResponse.Responsetype == "DATA" {
+		} else {
 			writeResponse("",
 				rawResponse.ResponseData,
 				terminationSequence,
