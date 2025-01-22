@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -87,6 +88,6 @@ func (info InfoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 				&commandResponse)
 		}
 	}
-
+	fmt.Printf("CommandREsponse => %s", commandResponse.String())
 	return commandResponse.String()
 }
