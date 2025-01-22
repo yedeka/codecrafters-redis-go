@@ -1,7 +1,6 @@
 package command
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -42,7 +41,7 @@ func handleMaster(replicationId string, offset int) []ParsedResponse {
 	masterInfoResponse := []ParsedResponse{}
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(replicationId)),
+		ResponseData: strconv.Itoa(len(replictionIdPrefix + replicationId)),
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_ID",
@@ -50,7 +49,7 @@ func handleMaster(replicationId string, offset int) []ParsedResponse {
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(strconv.Itoa(offset))),
+		ResponseData: strconv.Itoa(len(replicationOffset + strconv.Itoa(offset))),
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_OFFSET",
@@ -88,6 +87,5 @@ func (info InfoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 				&commandResponse)
 		}
 	}
-	fmt.Printf("CommandREsponse => %s", commandResponse.String())
 	return commandResponse.String()
 }
