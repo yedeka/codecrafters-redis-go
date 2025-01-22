@@ -50,11 +50,11 @@ func handleMaster(replicationId string, offset int) []ParsedResponse {
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(replicationId)),
+		ResponseData: strconv.Itoa(len(strconv.Itoa(offset))),
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_OFFSET",
-		ResponseData: replicationId,
+		ResponseData: strconv.Itoa(offset),
 	})
 	return masterInfoResponse
 }
