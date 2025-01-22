@@ -18,7 +18,7 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 		if strings.ToLower(arg) == "replication" {
 			var responseString string = ""
 			if info.hostConfig.IsMaster {
-				responseString = "role:master"
+				return handleMaster(defaultReplId, defaultOffset)
 			} else {
 				responseString = "role:slave"
 			}
@@ -36,6 +36,28 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 	return responseList
 }
 
+func handleMaster(replicationId string, offset int) []ParsedResponse {
+	//8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb
+	masterInfoResponse := []ParsedResponse{}
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "LENGTH",
+		ResponseData: strconv.Itoa(len(replicationId)),
+	})
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "REPL_ID",
+		ResponseData: replicationId,
+	})
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "LENGTH",
+		ResponseData: strconv.Itoa(len(replicationId)),
+	})
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "REPL_OFFSET",
+		ResponseData: replicationId,
+	})
+	return masterInfoResponse
+}
+
 func (info InfoCommand) Execute() string {
 	return info.FormatOutput(handleArgs(info))
 }
@@ -45,6 +67,16 @@ func (info InfoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 	for _, rawResponse := range rawResponseList {
 		if rawResponse.Responsetype == "LENGTH" {
 			writeResponse(lengthPrefix,
+				rawResponse.ResponseData,
+				terminationSequence,
+				&commandResponse)
+		} else if rawResponse.Responsetype == "REPL_ID" {
+			writeResponse(replictionIdPrefix,
+				rawResponse.ResponseData,
+				terminationSequence,
+				&commandResponse)
+		} else if rawResponse.Responsetype == "REPL_OFFSET" {
+			writeResponse(replicationOffset,
 				rawResponse.ResponseData,
 				terminationSequence,
 				&commandResponse)
