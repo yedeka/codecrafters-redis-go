@@ -39,14 +39,14 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 func handleMaster(replicationId string, offset int) []ParsedResponse {
 	//8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb
 	masterInfoResponse := []ParsedResponse{}
-	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+	/*masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
 		ResponseData: strconv.Itoa(len(replictionIdPrefix + replicationId)),
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_ID",
 		ResponseData: replicationId,
-	})
+	})*/
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
 		ResponseData: strconv.Itoa(len(replicationOffset + strconv.Itoa(offset))),
