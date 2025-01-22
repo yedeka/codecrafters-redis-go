@@ -41,19 +41,19 @@ func handleMaster(replicationId string, offset int) []ParsedResponse {
 	masterInfoResponse := []ParsedResponse{}
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "LENGTH",
-		ResponseData: strconv.Itoa(len(replicationOffset + strconv.Itoa(offset))),
-	})
-	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
-		Responsetype: "REPL_OFFSET",
-		ResponseData: strconv.Itoa(offset),
-	})
-	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
-		Responsetype: "LENGTH",
 		ResponseData: strconv.Itoa(len(replictionIdPrefix + replicationId)),
 	})
 	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
 		Responsetype: "REPL_ID",
 		ResponseData: replicationId,
+	})
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "LENGTH",
+		ResponseData: strconv.Itoa(len(replicationOffset + strconv.Itoa(offset))),
+	})
+	masterInfoResponse = append(masterInfoResponse, ParsedResponse{
+		Responsetype: "REPL_OFFSET",
+		ResponseData: strconv.Itoa(offset),
 	})
 	return masterInfoResponse
 }
