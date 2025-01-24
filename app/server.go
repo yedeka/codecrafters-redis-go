@@ -91,8 +91,16 @@ func acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
 	}
 }
 
+func performHandShake(hostProps *model.HostConfig) {
+	fmt.Printf("host type => %v\n",hostProps.IsMaster)
+	if !hostProps.IsMaster {
+		fmt.Printf("Connecting to host %s on port %s\n"hostProps.MasterProps.Host, hostProps.MasterProps.Port)
+	}
+}
+
 func handleConns(conn net.Conn, hostProps *model.HostConfig) {
 	defer conn.Close()
+	performHandShake(hostProps)
 	var requestBuffer []string
 	for {
 		requestData := make([]byte, 1024)
