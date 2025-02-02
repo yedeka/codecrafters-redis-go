@@ -46,7 +46,13 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 				hostConfig: hostConfig,
 			}
 		}
-
+	case "REPLCONF" : 
+	{
+		return ReplConfCommand{
+			arguments:  []string{inputRequest[4]},
+			hostConfig: hostConfig,
+		}
+	}
 	default:
 		return nil
 	}
