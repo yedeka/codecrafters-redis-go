@@ -61,16 +61,14 @@ func (client Follower) performHandShake() {
 		serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {CommandArgument{
 			argumentKey: listeningPortConfKey,
 			argumentValue: replicationPort,	
-		}
-	}, "3")
+		}}, "3")
 		if successfulResponse == serverResponse { 
 			fmt.Println("REPLCONF listen-port complete")
 			serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {
 				CommandArgument{
 					argumentKey: capacityKey,
 					argumentValue: defaultCapacityValue,	
-				}
-			}, "3")
+				}}, "3")
 			if successfulResponse == serverResponse { 
 				fmt.Println("Succeful completion of REPLCONF handshake")
 			}	
