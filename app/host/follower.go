@@ -7,7 +7,7 @@ import(
 	"os"
 	"strconv"
 	"strings"
-	
+
 	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
 
@@ -58,16 +58,19 @@ func (client Follower) performHandShake() {
 	serverResponse := client.sendRequestToServer(pingCommand, CommandArgument{})
 	if successfulPingResponse == serverResponse { 
 		fmt.Println("Successful PING handshake")
-		serverResponse = client.sendRequestToServer(replConfCommand, CommandArgument{
+		serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {CommandArgument{
 			argumentKey: listeningPortConfKey,
 			argumentValue: replicationPort,	
-		})
+		}
+	}, "3")
 		if successfulResponse == serverResponse { 
 			fmt.Println("REPLCONF listen-port complete")
-			serverResponse = client.sendRequestToServer(replConfCommand, CommandArgument{
-				argumentKey: capacityKey,
-				argumentValue: defaultCapacityValue,	
-			})
+			serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {
+				CommandArgument{
+					argumentKey: capacityKey,
+					argumentValue: defaultCapacityValue,	
+				}
+			}, "3")
 			if successfulResponse == serverResponse { 
 				fmt.Println("Succeful completion of REPLCONF handshake")
 			}	
@@ -87,7 +90,9 @@ func (client Follower) sendCommand(command string, argument CommandArgument) str
 	case pingCommand :
 		return client.sendSimpleCommand(pingCommand)
 	case replConfCommand :
-		return client.sendParameterizedCommand(replConfCommand, argument) 	  
+		return client.sendParameterizedCommand(replConfCommand, argument)
+	case psyncCommand: 
+	    return client.sendParameterizedCommand(replConfCommand, argument) 	  
 	default : 
 		return ""
 	}
@@ -102,15 +107,17 @@ func (client Follower) sendSimpleCommand(simpleCommand string) string {
 }
 
 func (client Follower) sendParameterizedCommand(
-	parameterizeCommand string, argument CommandArgument) string{
+	parameterizeCommand string, []argument argumentList, lineNumber string) string{
 		outputTokens := []string{}
-		outputTokens = append(outputTokens, linePrefix+"3")
+		outputTokens = append(outputTokens, linePrefix+lineNumber)
 		outputTokens = append(outputTokens, 
 			lengthPrefix+strconv.Itoa(len(parameterizeCommand)))
 		outputTokens = append(outputTokens, parameterizeCommand)
-		outputTokens = append(outputTokens, 
-			lengthPrefix+strconv.Itoa(len(argument.argumentKey)))
-		outputTokens = append(outputTokens, argument.argumentKey)
+		if emptyKey != argument.argumentKey {
+			outputTokens = append(outputTokens, 
+				lengthPrefix+strconv.Itoa(len(argument.argumentKey)))
+			outputTokens = append(outputTokens, argument.argumentKey)
+		}
 		outputTokens = append(outputTokens, 
 			lengthPrefix+strconv.Itoa(len(argument.argumentValue)))
 		outputTokens = append(outputTokens, argument.argumentValue)
