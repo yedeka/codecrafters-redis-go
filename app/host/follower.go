@@ -74,10 +74,10 @@ func (client Follower) performHandShake() {
 				serverResponse = client.sendRequestToServer(psyncCommand, []CommandArgument {
 					CommandArgument{
 						argumentKey: emptyKey,
-						argumentValue: defaultReplId,	
+						argumentValue: defaultReplIdValue,	
 					}, CommandArgument{
 						argumentKey: emptyKey,
-						argumentValue: defaultOffset,	
+						argumentValue: defaultOffsetValue,	
 					}})
 					if successfulResponse == serverResponse { 
 						fmt.Println("Handshake completed successfully")

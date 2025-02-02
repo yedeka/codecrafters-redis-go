@@ -16,8 +16,8 @@ const replicationPort = "6380"
 const capacityKey = "capa"
 const defaultCapacityValue = "psync2"
 const emptyKey = "EMPTY"
-const defaultReplId = "?"
-const defaultOffset = "-1"
+const defaultReplIdValue = "?"
+const defaultOffsetValue = "-1"
 // Constants for validating Successful reponse strings from server
 const successfulPingResponse = "+PONG" + delimiter
 const successfulResponse = "+OK" + delimiter

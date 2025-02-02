@@ -9,6 +9,8 @@ import (
 	
 	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
+const defaultReplId = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb"
+const defaultOffset = 0
 
 func CreateHost(listeningPort string, 
 	replicationData string, 
@@ -42,6 +44,8 @@ func createMaster(hostAddress string, listeningPort string) RedisHost {
 			listeningPort: listeningPort,
 			hostConfig: &model.HostConfig{
 				IsMaster: true,
+				ReplId: defaultReplId,
+				Offset: defaultOffset,
 			},
 		}	
 }

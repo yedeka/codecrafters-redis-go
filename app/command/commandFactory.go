@@ -7,11 +7,7 @@ import (
 
 func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command {
 	argsMap := make(map[string]string)
-	if len(inputRequest) > 7 {
-		for i := 8; i < len(inputRequest); i += 4 {
-			argsMap[strings.ToLower(inputRequest[i])] = inputRequest[i+2]
-		}
-	}
+	
 	switch commandName := strings.ToUpper(inputRequest[2]); commandName {
 	case "ECHO":
 		return EchoCommand{
@@ -23,6 +19,12 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 		}
 	case "SET":
 		keyValue := inputRequest[4]
+		if len(inputRequest) > 7 {
+			for i := 8; i < len(inputRequest); i += 4 {
+				argsMap[strings.ToLower(inputRequest[i])] = inputRequest[i+2]
+			}
+		}
+
 		return SetCommand{
 			key: keyValue,
 			value: SetValue{
@@ -50,6 +52,18 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 	{
 		return ReplConfCommand{
 			arguments:  []string{inputRequest[4]},
+			hostConfig: hostConfig,
+		}
+	}
+	case "PSYNC" : 
+	{
+		//*3 $5 PSYNC $1 ? $2 -1
+	
+		argsMap["REPL_ID"] = inputRequest[4]
+		argsMap["REPL_OFFSET"] = inputRequest[6]
+		
+		return PSyncCommand{
+			arguments:  argsMap,
 			hostConfig: hostConfig,
 		}
 	}

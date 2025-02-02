@@ -18,7 +18,7 @@ func handleArgs(info InfoCommand) []ParsedResponse {
 		if strings.ToLower(arg) == "replication" {
 			var responseString string = ""
 			if info.hostConfig.IsMaster {
-				return handleMaster(defaultReplId, defaultOffset)
+				return handleMaster(info.hostConfig.ReplId, info.hostConfig.Offset)
 			} else {
 				responseString = rolePrefix + slaveRole
 			}
