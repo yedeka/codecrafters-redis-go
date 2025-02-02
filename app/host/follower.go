@@ -55,42 +55,53 @@ func (client Follower) connectToServer() (net.Conn, error) {
 
 func (client Follower) performHandShake() {
 	fmt.Println("Starting Handshake")
-	serverResponse := client.sendRequestToServer(pingCommand, CommandArgument{})
+	serverResponse := client.sendRequestToServer(pingCommand,  make([]CommandArgument, 0))
 	if successfulPingResponse == serverResponse { 
 		fmt.Println("Successful PING handshake")
 		serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {CommandArgument{
 			argumentKey: listeningPortConfKey,
 			argumentValue: replicationPort,	
-		}}, "3")
+		}})
 		if successfulResponse == serverResponse { 
 			fmt.Println("REPLCONF listen-port complete")
 			serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {
 				CommandArgument{
 					argumentKey: capacityKey,
 					argumentValue: defaultCapacityValue,	
-				}}, "3")
+				}})
 			if successfulResponse == serverResponse { 
-				fmt.Println("Succeful completion of REPLCONF handshake")
+				fmt.Println("REPLCONF capacity complete")
+				serverResponse = client.sendRequestToServer(psyncCommand, []CommandArgument {
+					CommandArgument{
+						argumentKey: emptyKey,
+						argumentValue: defaultReplId,	
+					}, CommandArgument{
+						argumentKey: emptyKey,
+						argumentValue: defaultOffset,	
+					}})
+					if successfulResponse == serverResponse { 
+						fmt.Println("Handshake completed successfully")
+					}
 			}	
 		}
 	}
 }
 
-func (client Follower) sendRequestToServer(command string, argument CommandArgument) string {
-	response := client.sendCommand(command, argument)
+func (client Follower) sendRequestToServer(command string, argumentList []CommandArgument) string {
+	response := client.sendCommand(command, argumentList)
 	client.sendResponseToServer(response)
 	serverResponse := client.listenToServer()
 	return serverResponse
 }
 
-func (client Follower) sendCommand(command string, argument CommandArgument) string {
+func (client Follower) sendCommand(command string, argumentList []CommandArgument) string {
 	switch commandToSend := command; commandToSend{
 	case pingCommand :
 		return client.sendSimpleCommand(pingCommand)
 	case replConfCommand :
-		return client.sendParameterizedCommand(replConfCommand, argument)
+		return client.sendParameterizedCommand(replConfCommand, argumentList)
 	case psyncCommand: 
-	    return client.sendParameterizedCommand(replConfCommand, argument) 	  
+	    return client.sendParameterizedCommand(psyncCommand, argumentList) 	  
 	default : 
 		return ""
 	}
@@ -105,20 +116,25 @@ func (client Follower) sendSimpleCommand(simpleCommand string) string {
 }
 
 func (client Follower) sendParameterizedCommand(
-	parameterizeCommand string, []argument argumentList, lineNumber string) string{
+	parameterizeCommand string, argumentList []CommandArgument) string {
 		outputTokens := []string{}
-		outputTokens = append(outputTokens, linePrefix+lineNumber)
+		outputTokens = append(outputTokens, linePrefix)
 		outputTokens = append(outputTokens, 
 			lengthPrefix+strconv.Itoa(len(parameterizeCommand)))
 		outputTokens = append(outputTokens, parameterizeCommand)
-		if emptyKey != argument.argumentKey {
-			outputTokens = append(outputTokens, 
-				lengthPrefix+strconv.Itoa(len(argument.argumentKey)))
-			outputTokens = append(outputTokens, argument.argumentKey)
-		}
-		outputTokens = append(outputTokens, 
-			lengthPrefix+strconv.Itoa(len(argument.argumentValue)))
-		outputTokens = append(outputTokens, argument.argumentValue)
+			for _, argument := range(argumentList) {
+				if emptyKey != argument.argumentKey {
+					outputTokens = append(outputTokens, 
+						lengthPrefix+strconv.Itoa(len(argument.argumentKey)))
+					outputTokens = append(outputTokens, argument.argumentKey)
+				}
+				outputTokens = append(outputTokens, 
+					lengthPrefix+strconv.Itoa(len(argument.argumentValue)))
+				outputTokens = append(outputTokens, argument.argumentValue)
+
+			}
+		tokenLength := (len(outputTokens) - 1) / 2
+		outputTokens[0] = outputTokens[0] + strconv.Itoa(tokenLength)  
 		return client.prepOutput(outputTokens)
 }
 
