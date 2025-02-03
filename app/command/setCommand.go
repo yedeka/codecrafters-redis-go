@@ -21,6 +21,15 @@ type SetCommand struct {
 	value              SetValue
 	successfulResponse string
 	args               map[string]string
+	piggybackFlag bool
+}
+
+func (set SetCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (set SetCommand) IsPiggyBackCommand() bool {
+	return set.piggybackFlag 
 }
 
 func (set SetCommand) prepareSetValue() error {

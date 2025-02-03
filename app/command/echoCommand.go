@@ -7,6 +7,15 @@ import (
 
 type EchoCommand struct {
 	input string
+	piggybackFlag bool
+}
+
+func (echo EchoCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (echo EchoCommand) IsPiggyBackCommand() bool {
+	return echo.piggybackFlag 
 }
 
 func (echo EchoCommand) Execute() string {

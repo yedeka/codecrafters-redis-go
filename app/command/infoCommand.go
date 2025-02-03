@@ -10,8 +10,16 @@ import (
 type InfoCommand struct {
 	hostConfig *model.HostConfig
 	arguments  []string
+	piggybackFlag bool
 }
 
+func (info InfoCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (info InfoCommand) IsPiggyBackCommand() bool {
+	return info.piggybackFlag 
+}
 func handleArgs(info InfoCommand) []ParsedResponse {
 	responseList := []ParsedResponse{}
 	for _, arg := range info.arguments {

@@ -10,8 +10,16 @@ import (
 type PSyncCommand struct {
 	hostConfig *model.HostConfig
 	arguments  map[string]string
+	piggybackFlag bool
 }
 
+func (psync PSyncCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (psync PSyncCommand) IsPiggyBackCommand() bool {
+	return psync.piggybackFlag 
+}
 
 func (psync PSyncCommand) Execute() string {
 	rawResponseList := []ParsedResponse{

@@ -7,8 +7,16 @@ import (
 
 type PingCommand struct {
 	ResponsePrompt string
+	piggybackFlag bool
 }
 
+func (ping PingCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (ping PingCommand) IsPiggyBackCommand() bool {
+	return ping.piggybackFlag 
+}
 // FormatOutput implements Command.
 func (ping PingCommand) FormatOutput([]ParsedResponse) string {
 	return ("UNUSED")

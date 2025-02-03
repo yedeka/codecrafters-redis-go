@@ -9,8 +9,16 @@ import (
 type ReplConfCommand struct {
 	hostConfig *model.HostConfig
 	arguments  []string
+	piggybackFlag bool
 }
 
+func (replConf ReplConfCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (replConf ReplConfCommand) IsPiggyBackCommand() bool {
+	return replConf.piggybackFlag 
+}
 
 func (replConf ReplConfCommand) Execute() string {
 	rawResponseList := []ParsedResponse{

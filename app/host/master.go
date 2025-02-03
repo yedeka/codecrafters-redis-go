@@ -88,6 +88,7 @@ func (master Master) handleCons(conn net.Conn) {
 			fmt.Println("Unsupported command passed")
 			os.Exit(1)
 		}
+		fmt.Printf("%v\n",requestedCommand.IsPiggyBackCommand())
 		// Write back to connection
 		_, err = conn.Write([]byte(requestedCommand.Execute()))
 		if err != nil {

@@ -8,6 +8,15 @@ import (
 type GetCommand struct {
 	key      string
 	erroCode string
+	piggybackFlag bool
+}
+
+func (get GetCommand) SendPiggyBackResponse() string {
+	return noPiggybackResponse
+}
+
+func (get GetCommand) IsPiggyBackCommand() bool {
+	return get.piggybackFlag 
 }
 
 func (get GetCommand) Execute() string {

@@ -12,10 +12,12 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 	case "ECHO":
 		return EchoCommand{
 			input: inputRequest[4],
+			piggybackFlag: false,
 		}
 	case "PING":
 		return PingCommand{
 			ResponsePrompt: "PONG",
+			piggybackFlag: false,
 		}
 	case "SET":
 		keyValue := inputRequest[4]
@@ -33,12 +35,14 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 			},
 			successfulResponse: "+OK",
 			args:               argsMap,
+			piggybackFlag: false,
 		}
 	case "GET":
 		{
 			return GetCommand{
 				key:      inputRequest[4],
 				erroCode: "-1",
+				piggybackFlag: false,
 			}
 		}
 	case "INFO":
@@ -46,6 +50,7 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 			return InfoCommand{
 				arguments:  []string{inputRequest[4]},
 				hostConfig: hostConfig,
+				piggybackFlag: false,
 			}
 		}
 	case "REPLCONF" : 
@@ -53,6 +58,7 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 		return ReplConfCommand{
 			arguments:  []string{inputRequest[4]},
 			hostConfig: hostConfig,
+			piggybackFlag: false,
 		}
 	}
 	case "PSYNC" : 
@@ -65,6 +71,7 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 		return PSyncCommand{
 			arguments:  argsMap,
 			hostConfig: hostConfig,
+			piggybackFlag: true,
 		}
 	}
 	default:

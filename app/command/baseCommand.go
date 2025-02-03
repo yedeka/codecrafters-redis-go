@@ -10,6 +10,7 @@ const replicationOffset = "master_repl_offset:"
 const successfulResponse = "+OK"
 const fullResyncResponse = "+FULLRESYNC"
 const space = " "
+const noPiggybackResponse = "Piggyback reponse not implemented"
 
 type ParsedResponse struct {
 	Responsetype string
@@ -19,4 +20,6 @@ type ParsedResponse struct {
 type Command interface {
 	Execute() string
 	FormatOutput([]ParsedResponse) string
+	IsPiggyBackCommand() bool
+	SendPiggyBackResponse() string
 }
