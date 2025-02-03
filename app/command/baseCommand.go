@@ -22,4 +22,5 @@ type Command interface {
 	FormatOutput([]ParsedResponse) string
 	IsPiggyBackCommand() bool
 	SendPiggyBackResponse() string
+	IsWriteCommand() bool
 }

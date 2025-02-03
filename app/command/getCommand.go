@@ -9,6 +9,11 @@ type GetCommand struct {
 	key      string
 	erroCode string
 	piggybackFlag bool
+	writeCommandFlag bool
+}
+
+func (get GetCommand) IsWriteCommand() bool {
+	return get.writeCommandFlag
 }
 
 func (get GetCommand) SendPiggyBackResponse() string {

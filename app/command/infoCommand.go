@@ -11,15 +11,21 @@ type InfoCommand struct {
 	hostConfig *model.HostConfig
 	arguments  []string
 	piggybackFlag bool
+	writeCommandFlag bool
+}
+
+func (info InfoCommand) IsWriteCommand() bool {
+	return info.writeCommandFlag
+}
+
+func (info InfoCommand) IsPiggyBackCommand() bool {
+	return info.piggybackFlag 
 }
 
 func (info InfoCommand) SendPiggyBackResponse() string {
 	return noPiggybackResponse
 }
 
-func (info InfoCommand) IsPiggyBackCommand() bool {
-	return info.piggybackFlag 
-}
 func handleArgs(info InfoCommand) []ParsedResponse {
 	responseList := []ParsedResponse{}
 	for _, arg := range info.arguments {

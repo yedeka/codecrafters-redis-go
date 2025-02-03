@@ -10,6 +10,11 @@ type ReplConfCommand struct {
 	hostConfig *model.HostConfig
 	arguments  []string
 	piggybackFlag bool
+	writeCommandFlag bool
+}
+
+func (replConf ReplConfCommand) IsWriteCommand() bool {
+	return replConf.writeCommandFlag
 }
 
 func (replConf ReplConfCommand) SendPiggyBackResponse() string {

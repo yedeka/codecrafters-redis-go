@@ -8,10 +8,15 @@ import (
 type PingCommand struct {
 	ResponsePrompt string
 	piggybackFlag bool
+	writeCommandFlag bool
 }
 
 func (ping PingCommand) SendPiggyBackResponse() string {
 	return noPiggybackResponse
+}
+
+func (ping PingCommand) IsWriteCommand() bool {
+	return ping.writeCommandFlag
 }
 
 func (ping PingCommand) IsPiggyBackCommand() bool {

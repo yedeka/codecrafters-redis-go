@@ -13,6 +13,7 @@ type Master struct {
 	hostIpAddress string 
 	listeningPort string
 	hostConfig *model.HostConfig
+	replicaConnections []net.Conn
 }
 
 func (master Master) GetHostConfig() *model.HostConfig {
@@ -20,6 +21,7 @@ func (master Master) GetHostConfig() *model.HostConfig {
 }
 
 func (master Master) Init() {
+	master.replicaConnections = []net.Conn{}
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(master.hostIpAddress)
 	listeningAddress.WriteString(serverDelimiter)

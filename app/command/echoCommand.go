@@ -8,6 +8,11 @@ import (
 type EchoCommand struct {
 	input string
 	piggybackFlag bool
+	writeCommandFlag bool
+}
+
+func (echo EchoCommand) IsWriteCommand() bool {
+	return echo.writeCommandFlag
 }
 
 func (echo EchoCommand) SendPiggyBackResponse() string {

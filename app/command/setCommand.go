@@ -22,6 +22,11 @@ type SetCommand struct {
 	successfulResponse string
 	args               map[string]string
 	piggybackFlag bool
+	writeCommandFlag bool
+}
+
+func (set SetCommand) IsWriteCommand() bool {
+	return set.writeCommandFlag
 }
 
 func (set SetCommand) SendPiggyBackResponse() string {
@@ -33,11 +38,11 @@ func (set SetCommand) IsPiggyBackCommand() bool {
 }
 
 func (set SetCommand) prepareSetValue() error {
-	intDuration, err := strconv.Atoi(set.args["px"])
-	if nil != err {
-		keyMap[set.key] = set.value
-		return errors.New("invalid expiry time specified")
-	} else {
+	if pxValue, ok := set.args["px"]; ok { 
+		intDuration, err := strconv.Atoi(pxValue)
+		if nil != err { 
+			return errors.New("invalid expiry time specified")
+		}
 		set.value.timer = time.NewTimer(time.Duration(intDuration) * time.Millisecond)
 		keyMap[set.key] = set.value
 		go func() {
@@ -46,6 +51,8 @@ func (set SetCommand) prepareSetValue() error {
 		}()
 		return nil
 	}
+    keyMap[set.key] = set.value
+	return nil 
 }
 
 func (set SetCommand) Execute() string {

@@ -13,6 +13,11 @@ type PSyncCommand struct {
 	hostConfig *model.HostConfig
 	arguments  map[string]string
 	piggybackFlag bool
+	writeCommandFlag bool
+}
+
+func (psync PSyncCommand) IsWriteCommand() bool {
+	return psync.writeCommandFlag
 }
 
 func (psync PSyncCommand) SendPiggyBackResponse() string {
