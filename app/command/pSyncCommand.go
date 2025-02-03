@@ -1,8 +1,10 @@
 package command
 
 import (
+	"io/ioutil"
 	"strconv"
 	"strings"
+	"log"
 
 	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
@@ -14,7 +16,18 @@ type PSyncCommand struct {
 }
 
 func (psync PSyncCommand) SendPiggyBackResponse() string {
-	return noPiggybackResponse
+	rdbContent, err := ioutil.ReadFile("empty.rdb")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Print the byte slice
+	rdbContentString := string(rdbContent)
+	var emptyRdbResponse strings.Builder
+	emptyRdbResponse.WriteString(lengthPrefix)
+	emptyRdbResponse.WriteString(strconv.Itoa(len(rdbContentString)))
+	emptyRdbResponse.WriteString(terminationSequence)
+	emptyRdbResponse.WriteString(rdbContentString)
+	return emptyRdbResponse.String()
 }
 
 func (psync PSyncCommand) IsPiggyBackCommand() bool {
