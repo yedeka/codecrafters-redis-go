@@ -14,6 +14,10 @@ type InfoCommand struct {
 	writeCommandFlag bool
 }
 
+func (info InfoCommand) IsReplicationCommand() bool {
+	return false
+} 
+
 func (info InfoCommand) IsWriteCommand() bool {
 	return info.writeCommandFlag
 }

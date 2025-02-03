@@ -12,6 +12,10 @@ type GetCommand struct {
 	writeCommandFlag bool
 }
 
+func (get GetCommand) IsReplicationCommand() bool {
+	return false
+} 
+
 func (get GetCommand) IsWriteCommand() bool {
 	return get.writeCommandFlag
 }

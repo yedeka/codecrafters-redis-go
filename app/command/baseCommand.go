@@ -23,4 +23,5 @@ type Command interface {
 	IsPiggyBackCommand() bool
 	SendPiggyBackResponse() string
 	IsWriteCommand() bool
+	IsReplicationCommand() bool
 }

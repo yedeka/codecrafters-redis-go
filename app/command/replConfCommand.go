@@ -13,6 +13,11 @@ type ReplConfCommand struct {
 	writeCommandFlag bool
 }
 
+func (replConf ReplConfCommand) IsReplicationCommand() bool {
+	return false
+} 
+
+
 func (replConf ReplConfCommand) IsWriteCommand() bool {
 	return replConf.writeCommandFlag
 }

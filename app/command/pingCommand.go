@@ -11,6 +11,10 @@ type PingCommand struct {
 	writeCommandFlag bool
 }
 
+func (ping PingCommand) IsReplicationCommand() bool {
+	return false
+} 
+
 func (ping PingCommand) SendPiggyBackResponse() string {
 	return noPiggybackResponse
 }

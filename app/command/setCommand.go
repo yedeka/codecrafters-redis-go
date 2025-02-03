@@ -25,6 +25,10 @@ type SetCommand struct {
 	writeCommandFlag bool
 }
 
+func (set SetCommand) IsReplicationCommand() bool {
+	return false
+} 
+
 func (set SetCommand) IsWriteCommand() bool {
 	return set.writeCommandFlag
 }

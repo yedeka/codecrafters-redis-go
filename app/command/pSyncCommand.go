@@ -16,6 +16,10 @@ type PSyncCommand struct {
 	writeCommandFlag bool
 }
 
+func (psync PSyncCommand) IsReplicationCommand() bool {
+	return true
+} 
+
 func (psync PSyncCommand) IsWriteCommand() bool {
 	return psync.writeCommandFlag
 }
