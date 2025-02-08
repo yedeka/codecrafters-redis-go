@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/codecrafters-io/redis-starter-go/app/model"
@@ -8,7 +9,7 @@ import (
 
 type ReplConfCommand struct {
 	hostConfig *model.HostConfig
-	arguments  []string
+	arguments  map[string]string
 	piggybackFlag bool
 	writeCommandFlag bool
 }
@@ -30,7 +31,15 @@ func (replConf ReplConfCommand) IsPiggyBackCommand() bool {
 	return replConf.piggybackFlag 
 }
 
+func (replConf ReplConfCommand) IsReplicaConfigurationAvailabel() (bool, string) {
+	replicationPort, ok := replConf.arguments["listening-port"]; if ok {
+		return true, replicationPort 
+	}
+	return false, ""
+} 
+
 func (replConf ReplConfCommand) Execute() string {
+	fmt.Println(replConf.arguments)
 	rawResponseList := []ParsedResponse{
 		ParsedResponse{
 			Responsetype: "SUCCESS",}}

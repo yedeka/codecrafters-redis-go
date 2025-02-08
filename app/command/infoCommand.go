@@ -14,6 +14,10 @@ type InfoCommand struct {
 	writeCommandFlag bool
 }
 
+func (info InfoCommand) IsReplicaConfigurationAvailabel() (bool, string) {
+	return false, ""
+}
+
 func (info InfoCommand) IsReplicationCommand() bool {
 	return false
 } 

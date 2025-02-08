@@ -25,6 +25,10 @@ type SetCommand struct {
 	writeCommandFlag bool
 }
 
+func (set SetCommand) IsReplicaConfigurationAvailabel() (bool, string) {
+	return false, ""
+} 
+
 func (set SetCommand) IsReplicationCommand() bool {
 	return false
 } 

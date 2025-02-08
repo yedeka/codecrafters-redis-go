@@ -12,6 +12,10 @@ type GetCommand struct {
 	writeCommandFlag bool
 }
 
+func (get GetCommand) IsReplicaConfigurationAvailabel() (bool, string) {
+	return false, ""
+}
+
 func (get GetCommand) IsReplicationCommand() bool {
 	return false
 } 

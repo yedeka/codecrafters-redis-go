@@ -11,6 +11,10 @@ type EchoCommand struct {
 	writeCommandFlag bool
 }
 
+func (echo EchoCommand) IsReplicaConfigurationAvailabel() (bool, string) {
+	return false, ""
+}
+
 func (echo EchoCommand) IsReplicationCommand() bool {
 	return false
 } 

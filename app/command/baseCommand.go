@@ -24,4 +24,5 @@ type Command interface {
 	SendPiggyBackResponse() string
 	IsWriteCommand() bool
 	IsReplicationCommand() bool
+	IsReplicaConfigurationAvailabel() (bool, string)
 }

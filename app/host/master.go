@@ -90,17 +90,40 @@ func (master Master) handleCons(conn net.Conn) {
 			fmt.Println("Unsupported command passed")
 			os.Exit(1)
 		}
-		writeDataToConnection(conn, requestedCommand.Execute())
-		if requestedCommand.IsPiggyBackCommand() {
-			writeDataToConnection(conn, requestedCommand.SendPiggyBackResponse())	
+		respnEncodedResponse := requestedCommand.Execute()
+		err = writeDataToConnection(conn, respnEncodedResponse)
+		if nil != err {
+			fmt.Println("Could not write data to connection")
+		} else {
+			if requestedCommand.IsWriteCommand() {
+				fmt.Println("got write command sending over data to replicas")
+				fmt.Printf("replicationConnection count => %d\n", len(master.replicaConnections))
+				// Send data over to all the replicas for writing		
+				for _, replicaConn := range(master.replicaConnections) {
+					fmt.Printf("Sending data to replication connection %s\n", respnEncodedResponse)
+					writeDataToConnection(replicaConn, respnEncodedResponse)
+				}					
+			}
+			if requestedCommand.IsPiggyBackCommand() {
+				err = writeDataToConnection(conn, requestedCommand.SendPiggyBackResponse())
+				if nil != err {
+					fmt.Printf("Error while sending Piggyback response to client %s",err.Error())
+				}				
+			}
+			configAvailable, replicationPort := requestedCommand.IsReplicaConfigurationAvailabel() 
+			if configAvailable {
+				fmt.Printf("Replication port %s\n", replicationPort)
+			}
 		}
 	}
 }
 
-func writeDataToConnection(connection net.Conn, serverResponse string) {
+func writeDataToConnection(connection net.Conn, serverResponse string) error{
 	// Write back to connection
 	_, err := connection.Write([]byte(serverResponse))
 	if err != nil {
 		fmt.Println("Could not write back to channel")
+		return err
 	}
+	return nil
 }

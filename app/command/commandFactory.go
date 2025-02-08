@@ -60,8 +60,10 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 		}
 	case "REPLCONF" : 
 	{
+		argsMap[inputRequest[4]] = inputRequest[6] 
+		
 		return ReplConfCommand{
-			arguments:  []string{inputRequest[4]},
+			arguments:  argsMap,
 			hostConfig: hostConfig,
 			piggybackFlag: false,
 			writeCommandFlag: false,

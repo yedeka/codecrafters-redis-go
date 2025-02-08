@@ -16,8 +16,12 @@ type PSyncCommand struct {
 	writeCommandFlag bool
 }
 
+func (psync PSyncCommand) IsReplicaConfigurationAvailabel() (bool, string) {
+	return false, ""
+}
+
 func (psync PSyncCommand) IsReplicationCommand() bool {
-	return true
+	return false 
 } 
 
 func (psync PSyncCommand) IsWriteCommand() bool {
