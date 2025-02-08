@@ -86,6 +86,7 @@ func (master *Master) handleCons(conn net.Conn) {
 			continue
 		}
 		data := requestData[:n]
+		fmt.Printf("Type of data => %T\n",data)
 		requestBuffer = strings.Split(string(data), "\r\n")
 		requestedCommand := command.CommandFactory(requestBuffer, master.hostConfig)
 		if nil == requestedCommand {
@@ -101,8 +102,8 @@ func (master *Master) handleCons(conn net.Conn) {
 				fmt.Println("got write command sending over data to replicas")
 				// Send data over to all the replicas for writing		
 				for _, replicaConn := range(master.replicaConnections) {
-					fmt.Printf("Sending data to replication connection %s\n", respnEncodedResponse)
-					writeDataToConnection(replicaConn, respnEncodedResponse)
+					fmt.Printf("Sending data to replication connection %s\n", string(data))
+					writeDataToConnection(replicaConn, string(data))
 				}					
 			}
 			if requestedCommand.IsPiggyBackCommand() {
