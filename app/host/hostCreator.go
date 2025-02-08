@@ -31,7 +31,7 @@ func CreateHost(listeningPort string,
 }
 
 func createReplicaMaster(hostAddress string, listeningPort string, followerHostConfig *model.HostConfig) RedisHost {
-	return Master {
+	return &Master {
 		hostIpAddress: hostAddress,
 		listeningPort: listeningPort,
 		hostConfig: followerHostConfig,
@@ -39,7 +39,7 @@ func createReplicaMaster(hostAddress string, listeningPort string, followerHostC
 }
 
 func createMaster(hostAddress string, listeningPort string) RedisHost {
-		return Master {
+		return &Master {
 			hostIpAddress: hostAddress,
 			listeningPort: listeningPort,
 			hostConfig: &model.HostConfig{

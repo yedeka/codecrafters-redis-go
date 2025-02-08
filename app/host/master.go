@@ -13,15 +13,17 @@ type Master struct {
 	hostIpAddress string 
 	listeningPort string
 	hostConfig *model.HostConfig
+	ackPendingReplica map[net.Addr]string
 	replicaConnections []net.Conn
 }
 
-func (master Master) GetHostConfig() *model.HostConfig {
+func (master *Master) GetHostConfig() *model.HostConfig {
 	return master.hostConfig
 }
 
-func (master Master) Init() {
+func (master *Master) Init() {
 	master.replicaConnections = []net.Conn{}
+	master.ackPendingReplica = map[net.Addr]string{}
 	var listeningAddress strings.Builder
 	listeningAddress.WriteString(master.hostIpAddress)
 	listeningAddress.WriteString(serverDelimiter)
@@ -30,7 +32,7 @@ func (master Master) Init() {
 	master.listenForConnections(listeningAddress.String())
 }
 
-func (master Master) listenForConnections(listeningAddress string){
+func (master *Master) listenForConnections(listeningAddress string){
 	l, err := net.Listen("tcp", listeningAddress)
 	if err != nil {
 		fmt.Printf("Failed to bind to port %s\n", master.listeningPort)
@@ -43,7 +45,7 @@ func (master Master) listenForConnections(listeningAddress string){
 // handleConnectionsViaEventLoop tries to implement an Event Loop like structure to handle the connection requests by trying to keep
 // main execution thread free.
 
-func (master Master) handleConnectionsViaEventLoop(listener net.Listener) {
+func (master *Master) handleConnectionsViaEventLoop(listener net.Listener) {
 	// Create a channel to listen for and populate a new request
 	connChannel := make(chan net.Conn)
 	go master.acceptConnections(listener, connChannel)
@@ -58,7 +60,7 @@ func (master Master) handleConnectionsViaEventLoop(listener net.Listener) {
 }
 
 // acceptConnections accepts connections on the specified port and sends the new connection to a channel for further processing.  
-func (master Master) acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
+func (master *Master) acceptConnections(listener net.Listener, acceptChan chan net.Conn) {
 	// This blocking behavior is necessary to keep on listening on given port for new connection requests from Clients
 	// How main thread will be unblocked here is by invoking the acceptConnections function as a go subroutine.
 	for {
@@ -74,7 +76,7 @@ func (master Master) acceptConnections(listener net.Listener, acceptChan chan ne
 
 
 // handleCons handles the connection by parsing the incoming command and responding appropriately
-func (master Master) handleCons(conn net.Conn) {
+func (master *Master) handleCons(conn net.Conn) {
 	defer conn.Close()
 	var requestBuffer []string
 	for {
@@ -97,7 +99,6 @@ func (master Master) handleCons(conn net.Conn) {
 		} else {
 			if requestedCommand.IsWriteCommand() {
 				fmt.Println("got write command sending over data to replicas")
-				fmt.Printf("replicationConnection count => %d\n", len(master.replicaConnections))
 				// Send data over to all the replicas for writing		
 				for _, replicaConn := range(master.replicaConnections) {
 					fmt.Printf("Sending data to replication connection %s\n", respnEncodedResponse)
@@ -108,14 +109,28 @@ func (master Master) handleCons(conn net.Conn) {
 				err = writeDataToConnection(conn, requestedCommand.SendPiggyBackResponse())
 				if nil != err {
 					fmt.Printf("Error while sending Piggyback response to client %s",err.Error())
-				}				
+				}
+				err = createReplicationConnection(master, conn)
+				if(nil != err) {
+					fmt.Println(err.Error())
+				}
 			}
-			configAvailable, replicationPort := requestedCommand.IsReplicaConfigurationAvailabel() 
+			configAvailable, replicationPort := requestedCommand.IsReplicaConfigurationAvailabel()
 			if configAvailable {
-				fmt.Printf("Replication port %s\n", replicationPort)
+				master.ackPendingReplica[conn.RemoteAddr()] = replicationPort
 			}
 		}
 	}
+}
+
+func createReplicationConnection(master *Master, conn net.Conn) error {
+	_, ok := master.ackPendingReplica[conn.RemoteAddr()]
+	if !ok {
+		return fmt.Errorf("error : Sending RDB file to a connection outside Handshake")
+	}
+	master.replicaConnections = append(master.replicaConnections, conn)
+	delete(master.ackPendingReplica, conn.RemoteAddr())
+	return nil
 }
 
 func writeDataToConnection(connection net.Conn, serverResponse string) error{
