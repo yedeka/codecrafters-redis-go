@@ -1,9 +1,7 @@
 package command
 
 import (
-	"fmt"
 	"strings"
-
 	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
 
@@ -39,7 +37,6 @@ func (replConf ReplConfCommand) IsReplicaConfigurationAvailabel() (bool, string)
 } 
 
 func (replConf ReplConfCommand) Execute() string {
-	fmt.Println(replConf.arguments)
 	rawResponseList := []ParsedResponse{
 		ParsedResponse{
 			Responsetype: "SUCCESS",}}

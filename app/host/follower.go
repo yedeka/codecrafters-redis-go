@@ -36,11 +36,25 @@ func (client *Follower) Init() {
 	err = client.performHandShake()
 	if nil == err {
 		fmt.Printf("Handshake successful.\nStarting to listen on replication port %d\n", client.hostConfig.MasterProps.Port)
-		
+		go client.handleReplication()
 	} else {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	} 
+}
+
+func (client *Follower) handleReplication() {
+	for {
+		requestData := make([]byte, 1024)
+		n, err := client.serverConnection.Read(requestData)
+		if err != nil {
+			fmt.Printf("Error => %s",err.Error())
+			os.Exit(1)
+		}
+		data := requestData[:n]
+		requestBuffer := strings.Split(string(data), "\r\n")
+		fmt.Printf("Incoming data => %v\n", requestBuffer)
+	}	
 }
 
 func (client *Follower) connectToServer() (net.Conn, error) {
@@ -57,8 +71,6 @@ func (client *Follower) connectToServer() (net.Conn, error) {
 	}
 	return conn, nil
 }
-
-func 
 
 func (client *Follower) performHandShake() error {
 	fmt.Println("Starting Handshake")
