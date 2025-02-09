@@ -13,7 +13,7 @@ func HandleReplication(conn net.Conn) {
 		requestData := make([]byte, 1024)
 		n, err := conn.Read(requestData)
 		if err != nil {
-			fmt.Printf("Error => %s",err.Error())
+			fmt.Printf("Error => %s\n",err.Error())
 			continue;
 		}
 		data := requestData[:n]
@@ -28,7 +28,6 @@ func HandleReplication(conn net.Conn) {
 
 func handleReplCommand(request []string) {
 	receivedCommands := command.ReplicationCommandFactory(request)
-	fmt.Printf("%+v\n", receivedCommands)
 	for _,command := range(receivedCommands) {
 		commandResponse := command.ReplCommand.Execute()
 		fmt.Println(commandResponse)  
