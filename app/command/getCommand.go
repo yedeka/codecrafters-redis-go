@@ -42,6 +42,7 @@ func (get GetCommand) Execute() string {
 		})
 		return get.FormatOutput(rawResponseList)
 	} else {
+		value.timer.Reset()
 		rawResponseList = append(rawResponseList, ParsedResponse{
 			Responsetype: "LENGTH",
 			ResponseData: strconv.Itoa(len(value.value)),
