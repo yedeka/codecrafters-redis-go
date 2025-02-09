@@ -56,7 +56,7 @@ func createFollower(replicationData string) (RedisHost, error) {
 			if nil != err {
 				return nil, errors.New("non numeric port configuration passed for server")
 			}
-			return Follower {
+			return &Follower {
 				hostConfig: &model.HostConfig{
 					IsMaster: false,
 					MasterProps: model.MasterConfig{

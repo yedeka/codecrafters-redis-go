@@ -21,6 +21,7 @@ const defaultOffsetValue = "-1"
 // Constants for validating Successful reponse strings from server
 const successfulPingResponse = "+PONG" + delimiter
 const successfulResponse = "+OK" + delimiter
+const PSYNCPrefix = "+FULLRESYNC"
 
 type RedisHost interface {
 	Init()

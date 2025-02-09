@@ -21,24 +21,29 @@ type CommandArgument struct {
 	argumentValue string
 }
 
-func (client Follower) GetHostConfig() (*model.HostConfig) {
+func (client *Follower) GetHostConfig() (*model.HostConfig) {
 	return client.hostConfig
 }
 
-func (client Follower) Init() {
+func (client *Follower) Init() {
 	fmt.Println("Initializing Redis Client")
-	// client.serverConnection = 
 	conn, err := client.connectToServer()
 	if nil != err {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 	client.serverConnection = conn
-	client.performHandShake()
-	defer client.serverConnection.Close()
+	err = client.performHandShake()
+	if nil == err {
+		fmt.Printf("Handshake successful.\nStarting to listen on replication port %d\n", client.hostConfig.MasterProps.Port)
+		
+	} else {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	} 
 }
 
-func (client Follower) connectToServer() (net.Conn, error) {
+func (client *Follower) connectToServer() (net.Conn, error) {
 	var connectionString strings.Builder
 	connectionString.WriteString(client.hostConfig.MasterProps.Host)
 	connectionString.WriteString(serverDelimiter)
@@ -53,7 +58,9 @@ func (client Follower) connectToServer() (net.Conn, error) {
 	return conn, nil
 }
 
-func (client Follower) performHandShake() {
+func 
+
+func (client *Follower) performHandShake() error {
 	fmt.Println("Starting Handshake")
 	serverResponse := client.sendRequestToServer(pingCommand,  make([]CommandArgument, 0))
 	if successfulPingResponse == serverResponse { 
@@ -79,22 +86,29 @@ func (client Follower) performHandShake() {
 						argumentKey: emptyKey,
 						argumentValue: defaultOffsetValue,	
 					}})
-					if successfulResponse == serverResponse { 
-						fmt.Println("Handshake completed successfully")
+					if strings.HasPrefix(serverResponse, PSYNCPrefix) {
+						return nil
+					} else {
+						return fmt.Errorf("PSYNC handshake failed with server => %s\n", client.serverConnection.RemoteAddr())		
 					}
-			}	
+			} else {
+				return fmt.Errorf("REPL-CONF Capacity handshake failed with server => %s\n", client.serverConnection.RemoteAddr())	
+			}	 
+		} else {
+			return fmt.Errorf("REPL-CONF listen-port handshake failed with server => %s\n", client.serverConnection.RemoteAddr())
 		}
 	}
+	return fmt.Errorf("PING handshake failed with server => %s\n", client.serverConnection.RemoteAddr())
 }
 
-func (client Follower) sendRequestToServer(command string, argumentList []CommandArgument) string {
+func (client *Follower) sendRequestToServer(command string, argumentList []CommandArgument) string {
 	response := client.sendCommand(command, argumentList)
 	client.sendResponseToServer(response)
 	serverResponse := client.listenToServer()
 	return serverResponse
 }
 
-func (client Follower) sendCommand(command string, argumentList []CommandArgument) string {
+func (client *Follower) sendCommand(command string, argumentList []CommandArgument) string {
 	switch commandToSend := command; commandToSend{
 	case pingCommand :
 		return client.sendSimpleCommand(pingCommand)
@@ -107,7 +121,7 @@ func (client Follower) sendCommand(command string, argumentList []CommandArgumen
 	}
 }
 
-func (client Follower) sendSimpleCommand(simpleCommand string) string {
+func (client *Follower) sendSimpleCommand(simpleCommand string) string {
 	outputTokens := []string{}
 	outputTokens = append(outputTokens, linePrefix+"1")
 	outputTokens = append(outputTokens, lengthPrefix+strconv.Itoa(len(simpleCommand)))
@@ -115,7 +129,7 @@ func (client Follower) sendSimpleCommand(simpleCommand string) string {
 	return client.prepOutput(outputTokens)
 }
 
-func (client Follower) sendParameterizedCommand(
+func (client *Follower) sendParameterizedCommand(
 	parameterizeCommand string, argumentList []CommandArgument) string {
 		outputTokens := []string{}
 		outputTokens = append(outputTokens, linePrefix)
@@ -138,7 +152,7 @@ func (client Follower) sendParameterizedCommand(
 		return client.prepOutput(outputTokens)
 }
 
-func (client Follower) prepOutput(outputTokens []string) string {
+func (client *Follower) prepOutput(outputTokens []string) string {
 	var followerResponse strings.Builder
 
 	for _,token := range(outputTokens) {
@@ -148,7 +162,7 @@ func (client Follower) prepOutput(outputTokens []string) string {
 	return followerResponse.String()
 }
 
-func (client Follower) sendResponseToServer(responseString string) {
+func (client *Follower) sendResponseToServer(responseString string) {
 	// Response data to write
 	data := []byte(responseString)
 	// Write data to the connection
@@ -159,7 +173,7 @@ func (client Follower) sendResponseToServer(responseString string) {
 	}
 }
 
-func (client Follower) listenToServer() string{
+func (client *Follower) listenToServer() string{
 	// Read response from the server
 	reader := bufio.NewReader(client.serverConnection)
 	for {

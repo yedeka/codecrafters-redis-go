@@ -22,6 +22,7 @@ func (master *Master) GetHostConfig() *model.HostConfig {
 }
 
 func (master *Master) Init() {
+	fmt.Printf("Initializing master on port %s\n", master.listeningPort)
 	master.replicaConnections = []net.Conn{}
 	master.ackPendingReplica = map[net.Addr]string{}
 	var listeningAddress strings.Builder
@@ -86,7 +87,6 @@ func (master *Master) handleCons(conn net.Conn) {
 			continue
 		}
 		data := requestData[:n]
-		fmt.Printf("Type of data => %T\n",data)
 		requestBuffer = strings.Split(string(data), "\r\n")
 		requestedCommand := command.CommandFactory(requestBuffer, master.hostConfig)
 		if nil == requestedCommand {
