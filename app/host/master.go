@@ -29,7 +29,6 @@ func (master *Master) Init() {
 	listeningAddress.WriteString(master.hostIpAddress)
 	listeningAddress.WriteString(serverDelimiter)
 	listeningAddress.WriteString(master.listeningPort)
-
 	master.listenForConnections(listeningAddress.String())
 }
 

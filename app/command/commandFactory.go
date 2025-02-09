@@ -1,6 +1,7 @@
 package command
 
 import (
+	"fmt"
 	"strings"
 	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
@@ -86,4 +87,34 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 	default:
 		return nil
 	}
+}
+
+func ReplicationCommandFactory(request []string) []ReplicationCommand {
+	commandArray := []ReplicationCommand{}
+	fmt.Printf("%+v\n", request)
+	fmt.Printf("%d\n", len(request))
+	switch commandName := strings.ToUpper(request[2]); commandName {
+	case "SET": 
+		for count:=0; count<len(request); count+=7{
+			if len(strings.TrimSpace(request[count])) > 0 {
+				commandArray = append(commandArray, ReplicationCommand{
+					ReplCommand : SetCommand{
+						key: request[count+4],
+						value: SetValue{
+							key:   request[count+4],
+							value: request[count+6],
+						},
+						successfulResponse: "+OK",
+						args:               make(map[string]string),
+						piggybackFlag: false,
+						writeCommandFlag: false,
+					},
+					IsResponseAvailable: false, 
+				})
+			}	
+		}
+		return commandArray
+	default:
+		return nil
+	}	  
 }
