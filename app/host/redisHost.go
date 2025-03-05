@@ -23,6 +23,11 @@ const successfulPingResponse = "+PONG" + delimiter
 const successfulResponse = "+OK" + delimiter
 const PSYNCPrefix = "+FULLRESYNC"
 
+type CommandArgument struct {
+	argumentKey string
+	argumentValue string
+}
+
 type RedisHost interface {
 	Init()
 	GetHostConfig() *model.HostConfig 

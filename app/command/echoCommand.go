@@ -63,14 +63,3 @@ func (echo EchoCommand) FormatOutput(rawResponseList []ParsedResponse) string {
 
 	return commandResponse.String()
 }
-
-func writeResponse(prefix string,
-	responseData string,
-	responseDelimiter string,
-	responseBuffer *strings.Builder) {
-	if prefix != "" {
-		responseBuffer.WriteString(prefix)
-	}
-	responseBuffer.WriteString(responseData)
-	responseBuffer.WriteString(responseDelimiter)
-}

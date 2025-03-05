@@ -7,6 +7,7 @@ import (
 	"strings"
 	"github.com/codecrafters-io/redis-starter-go/app/command"
 	"github.com/codecrafters-io/redis-starter-go/app/model"
+	"github.com/codecrafters-io/redis-starter-go/app/util"
 )
 
 type Master struct {
@@ -93,7 +94,7 @@ func (master *Master) handleCons(conn net.Conn) {
 			os.Exit(1)
 		}
 		respnEncodedResponse := requestedCommand.Execute()
-		err = writeDataToConnection(conn, respnEncodedResponse)
+		err = util.SendResponseOverConnection(conn, respnEncodedResponse)
 		if nil != err {
 			fmt.Println("Could not write data to connection")
 		} else {
@@ -102,11 +103,11 @@ func (master *Master) handleCons(conn net.Conn) {
 				// Send data over to all the replicas for writing		
 				for _, replicaConn := range(master.replicaConnections) {
 					fmt.Printf("Sending data to replication connection %s\n", string(data))
-					writeDataToConnection(replicaConn, string(data))
+					util.SendResponseOverConnection(replicaConn, string(data))
 				}					
 			}
 			if requestedCommand.IsPiggyBackCommand() {
-				err = writeDataToConnection(conn, requestedCommand.SendPiggyBackResponse())
+				err = util.SendResponseOverConnection(conn, requestedCommand.SendPiggyBackResponse())
 				if nil != err {
 					fmt.Printf("Error while sending Piggyback response to client %s",err.Error())
 				}
@@ -130,15 +131,5 @@ func createReplicationConnection(master *Master, conn net.Conn) error {
 	}
 	master.replicaConnections = append(master.replicaConnections, conn)
 	delete(master.ackPendingReplica, conn.RemoteAddr())
-	return nil
-}
-
-func writeDataToConnection(connection net.Conn, serverResponse string) error{
-	// Write back to connection
-	_, err := connection.Write([]byte(serverResponse))
-	if err != nil {
-		fmt.Println("Could not write back to channel")
-		return err
-	}
 	return nil
 }

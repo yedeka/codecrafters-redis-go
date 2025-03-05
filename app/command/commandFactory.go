@@ -1,14 +1,12 @@
 package command
 
 import (
-	"fmt"
 	"strings"
 	"github.com/codecrafters-io/redis-starter-go/app/model"
 )
 
 func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command {
 	argsMap := make(map[string]string)
-	
 	switch commandName := strings.ToUpper(inputRequest[2]); commandName {
 	case "ECHO":
 		return EchoCommand{
@@ -89,11 +87,9 @@ func CommandFactory(inputRequest []string, hostConfig *model.HostConfig) Command
 	}
 }
 
-func ReplicationCommandFactory(request []string) []ReplicationCommand {
+func ReplicationCommandFactory(request []string, followerOffset int) []ReplicationCommand {
 	commandArray := []ReplicationCommand{}
-	fmt.Printf("%+v\n", request)
-	fmt.Printf("%d\n", len(request))
-	switch commandName := strings.ToUpper(request[2]); commandName {
+	switch commandName := strings.TrimSpace(strings.ToUpper(request[2])); commandName {
 	case "SET": 
 		for count:=0; count<len(request); count+=7{
 			if len(strings.TrimSpace(request[count])) > 0 {
@@ -114,6 +110,22 @@ func ReplicationCommandFactory(request []string) []ReplicationCommand {
 			}	
 		}
 		return commandArray
+
+	case "REPLCONF" : 
+	{
+		argsMap := make(map[string]string)
+		argsMap[strings.TrimSpace(request[4])] = strings.TrimSpace(request[6])
+		commandArray = append(commandArray, ReplicationCommand{
+			ReplCommand : ReplConfCommand{
+				arguments:  argsMap,
+				piggybackFlag: false,
+				writeCommandFlag: false,
+				offset: followerOffset,
+			}, 
+			IsResponseAvailable: true,
+		})
+		return commandArray
+	}	
 	default:
 		return nil
 	}	  

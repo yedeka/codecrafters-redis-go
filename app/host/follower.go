@@ -16,11 +16,6 @@ type Follower struct {
 	serverConnection net.Conn
 }
 
-type CommandArgument struct {
-	argumentKey string
-	argumentValue string
-}
-
 func (client *Follower) GetHostConfig() (*model.HostConfig) {
 	return client.hostConfig
 }
@@ -29,14 +24,13 @@ func (client *Follower) Init() {
 	fmt.Println("Initializing Redis Client")
 	conn, err := client.connectToServer()
 	if nil != err {
-		fmt.Println(err.Error())
+		fmt.Printf("Error while connecting to server %s\n", err.Error())
 		os.Exit(1)
 	}
 	client.serverConnection = conn
 	err = client.performHandShake()
 	if nil == err {
-		fmt.Printf("Handshake successful.\nStarting to listen on replication port %d\n", client.hostConfig.MasterProps.Port)
-		go HandleReplication(client.serverConnection)
+		go HandleReplication(client.serverConnection, client.hostConfig.Offset)
 	} else {
 		fmt.Println(err.Error())
 		os.Exit(1)
@@ -62,20 +56,17 @@ func (client *Follower) performHandShake() error {
 	fmt.Println("Starting Handshake")
 	serverResponse := client.sendRequestToServer(pingCommand,  make([]CommandArgument, 0))
 	if successfulPingResponse == serverResponse { 
-		fmt.Println("Successful PING handshake")
 		serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {CommandArgument{
 			argumentKey: listeningPortConfKey,
 			argumentValue: replicationPort,	
 		}})
 		if successfulResponse == serverResponse { 
-			fmt.Println("REPLCONF listen-port complete")
 			serverResponse = client.sendRequestToServer(replConfCommand, []CommandArgument {
 				CommandArgument{
 					argumentKey: capacityKey,
 					argumentValue: defaultCapacityValue,	
 				}})
 			if successfulResponse == serverResponse { 
-				fmt.Println("REPLCONF capacity complete")
 				serverResponse = client.sendRequestToServer(psyncCommand, []CommandArgument {
 					CommandArgument{
 						argumentKey: emptyKey,

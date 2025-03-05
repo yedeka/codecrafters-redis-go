@@ -25,7 +25,7 @@ func CreateHost(listeningPort string,
 			follower.Init()
 			createReplicaMaster(hostAddress, listeningPort, follower.GetHostConfig()).Init()
 		} else {
-			createMaster(hostAddress, listeningPort).Init()
+			go createMaster(hostAddress, listeningPort).Init()
 		}
 		 
 }
@@ -45,7 +45,6 @@ func createMaster(hostAddress string, listeningPort string) RedisHost {
 			hostConfig: &model.HostConfig{
 				IsMaster: true,
 				ReplId: defaultReplId,
-				Offset: defaultOffset,
 			},
 		}	
 }
@@ -59,6 +58,7 @@ func createFollower(replicationData string) (RedisHost, error) {
 			return &Follower {
 				hostConfig: &model.HostConfig{
 					IsMaster: false,
+					Offset: defaultOffset,
 					MasterProps: model.MasterConfig{
 						Host: replicationFollowerData[0],
 						Port: masterPort,
